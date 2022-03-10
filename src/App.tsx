@@ -21,7 +21,7 @@ function App() {
 							<label className="">{field.label}</label>
 							<input
 								type={field.type}
-								className="border-2 border-gray-300 rounded-lg p-2 mt-1 mb-2 smooth-effect hover:border-blue-400 hover:ring-blue-400 focus:ring-blue-400 focus:border-blue-400"
+								className="border-gray-300 border-2 rounded-lg p-2 mt-1 mb-2 smooth-effect hover:border-blue-400 hover:ring-blue-400 focus:ring-blue-400 focus:border-blue-400"
 								required
 							/>
 						</React.Fragment>
