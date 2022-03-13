@@ -1,5 +1,6 @@
-import React from 'react';
+import React, { useState } from 'react';
 import AppContainer from './AppContainer';
+import { Home } from './Components/Home';
 import Header from './Header';
 import logo from './logo.svg';
 // import './App.css';
@@ -11,12 +12,30 @@ const formFields = [
 	{ id: 5, label: 'Phone Number', type: 'number' },
 ];
 function App() {
+	const [state, setState] = useState('HOME');
+	const closeForm = () => {
+		setState('HOME');
+	};
+	const openForm = () => {
+		setState('FORM');
+	};
 	return (
 		<AppContainer>
-			<div className="p-4 mx-auto bg-white shadow-lg rounded-xl">
-
-					<Header title={'React & TypeScript Course with Tailwind CSS'} />
-					<form action="" className='grid grid-cols-1'>
+			<div className="px-4 py-2 mx-auto bg-white shadow-lg rounded-xl">
+				<Header title={'React & TypeScript Course with Tailwind CSS'} />
+				{state === 'HOME' ? (
+					<>
+						<Home />
+						<button
+							className="w-full bg-blue-500 font-medium font-worksans rounded-lg px-4 py-2 my-2 text-white hover:bg-blue-700 smooth-effect"
+							type="submit"
+							onClick={openForm}
+						>
+							Open Form
+						</button>
+					</>
+				) : (
+					<form action="" className="grid grid-cols-1">
 						{formFields.map((field) => (
 							<React.Fragment key={field.id}>
 								<label className="">{field.label}</label>
@@ -27,14 +46,23 @@ function App() {
 								/>
 							</React.Fragment>
 						))}
-						<button
-							className="w-28 bg-blue-500 font-medium font-worksans rounded-lg px-4 py-2 my-2 text-white hover:bg-blue-700 smooth-effect"
-							type="submit"
-						>
-							Submit
-						</button>
+						<div>
+							<button
+								className="w-28 bg-blue-500 font-medium font-worksans rounded-lg px-4 py-2 my-2 text-white hover:bg-blue-700 smooth-effect"
+								type="submit"
+							>
+								Submit
+							</button>
+							<button
+								className="ml-5 w-32 bg-blue-500 font-medium font-worksans rounded-lg px-4 py-2 my-2 text-white hover:bg-blue-700 smooth-effect"
+								onClick={closeForm}
+							>
+								Close Form
+							</button>
+						</div>
 					</form>
-				</div>
+				)}
+			</div>
 		</AppContainer>
 	);
 }
