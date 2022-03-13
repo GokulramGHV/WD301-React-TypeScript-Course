@@ -2,6 +2,7 @@ import React from 'react';
 import AppContainer from './AppContainer';
 import Header from './Header';
 import logo from './logo.svg';
+import UserInput from './UserInput';
 // import './App.css';
 const formFields = [
   { id: 1, label: 'First Name', type: 'text' },
@@ -17,14 +18,7 @@ function App() {
         <Header title={'React & TypeScript Course with Tailwind CSS'} />
         <form action="" className="grid grid-cols-1">
           {formFields.map((field) => (
-            <React.Fragment key={field.id}>
-              <label className="">{field.label}</label>
-              <input
-                type={field.type}
-                className="border-2 border-gray-300 rounded-lg p-2 mt-1 mb-2 smooth-effect hover:border-blue-400 hover:ring-blue-400 focus:ring-blue-400 focus:border-blue-400"
-                required
-              />
-            </React.Fragment>
+            <UserInput key={field.id} label={field.label} type={field.type} />
           ))}
           <button
             className=" bg-blue-500 w-28 font-medium font-worksans rounded-lg px-4 py-2 my-2 text-white hover:bg-blue-700 smooth-effect"
