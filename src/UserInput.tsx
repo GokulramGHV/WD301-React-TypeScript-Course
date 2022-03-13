@@ -1,8 +1,8 @@
 import React from 'react';
 
-export default function UserInput(props: { key: number, label: string, type: string }) {
+export default function UserInput(props: { label: string; type: string }) {
   return (
-    <React.Fragment key={props.key}>
+    <React.Fragment>
       <label>{props.label}</label>
       <input
         type={props.type}
