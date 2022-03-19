@@ -13,8 +13,8 @@ export function Form(props: { closeFormCB: () => void }) {
   const [newField, setNewField] = useState('');
   const [state, setState] = useState(formFields);
   const addField = () => {
-    if (newField != '') {
-      setState([
+    if (newField !== '') {
+      setState((state) => [
         ...state,
         {
           id: Number(new Date()),
@@ -28,35 +28,24 @@ export function Form(props: { closeFormCB: () => void }) {
   };
 
   const removeField = (id: number) => {
-    setState(state.filter((field) => field.id !== id));
+    setState((state) => state.filter((field) => field.id !== id));
   };
 
   const resetFields = () => {
-    let arr: any = [];
-    state.forEach((s) => {
-      let obj = {
-        ...s,
-        value: '',
-      };
-      arr.push(obj);
-    });
-    setState(arr);
+    setState((state) =>
+      state.map((s) => {
+        return { ...s, value: '' };
+      })
+    );
   };
 
   const onChangeField = (val: string, id: number) => {
-    let arr: any = [];
-    state.forEach((s) => {
-      if (s.id == id) {
-        let obj = {
-          ...s,
-          value: val,
-        };
-        arr.push(obj);
-      } else {
-        arr.push(s);
-      }
-    });
-    setState(arr);
+    setState((state) =>
+      state.map((s) => {
+        if (s.id === id) return { ...s, value: val };
+        return s;
+      })
+    );
   };
 
   return (
