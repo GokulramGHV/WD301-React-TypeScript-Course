@@ -3,17 +3,20 @@ import AppContainer from './AppContainer';
 import { Form } from './Components/Form';
 import { Home } from './Components/Home';
 import Header from './Header';
-import logo from './logo.svg';
+// import logo from './logo.svg';
 // import './App.css';
 
 function App() {
   const [state, setState] = useState('HOME');
+  const [formID, setFormIDState] = useState(0); 
   const closeForm = () => {
     setState('HOME');
   };
-  const openForm = () => {
+  const openForm = (id:number) => {
+    setFormIDState(id);
     setState('FORM');
   };
+
   return (
     <AppContainer>
       <div className="px-4 py-2 mx-auto bg-white shadow-lg rounded-xl">
@@ -21,7 +24,7 @@ function App() {
         {state === 'HOME' ? (
           <Home openFormCB={openForm} />
         ) : (
-          <Form closeFormCB={closeForm} />
+          <Form closeFormCB={closeForm} formID={formID} />
         )}
       </div>
     </AppContainer>
