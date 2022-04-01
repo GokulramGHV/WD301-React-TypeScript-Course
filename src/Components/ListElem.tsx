@@ -7,7 +7,7 @@ export default function ListElem(props: {
   removeFormsCB: (id: number) => void;
 }) {
   return (
-    <>
+    <div className='py-2 border-2 border-gray-200 pr-10 rounded-lg bg-white shadow-md mb-3'>
       <div className="flex">
         <div className="text-xl flex items-center flex-1 justify-center">
           {' '}
@@ -26,6 +26,6 @@ export default function ListElem(props: {
           Remove
         </button>
       </div>
-    </>
+    </div>
   );
 }

@@ -51,7 +51,7 @@ const saveFormData = (currentState: formData) => {
   saveLocalForms(updatedLocalForms);
 };
 
-export function Form(props: { closeFormCB: () => void; formID: number }) {
+export function Form(props: { formID: number }) {
   const [newField, setNewField] = useState('');
   const [state, setState] = useState(() => initialState(props.formID));
   const titleRef = useRef<HTMLInputElement>(null);
@@ -66,7 +66,7 @@ export function Form(props: { closeFormCB: () => void; formID: number }) {
   // useEffect(()=>{
   //   titleRef.current?.focus();
   // }, [state])
-  
+
   useEffect(() => {
     let timeout = setTimeout(() => {
       saveFormData(state);
@@ -191,7 +191,7 @@ export function Form(props: { closeFormCB: () => void; formID: number }) {
         </button>
         <button
           className="ml-3 w-32 bg-blue-500 font-medium font-worksans rounded-lg px-4 py-2 my-2 text-white hover:bg-blue-700 smooth-effect"
-          onClick={props.closeFormCB}
+          onClick={() => (window.location.href = '/')}
         >
           Close Form
         </button>
