@@ -7,6 +7,7 @@ import {
   saveLocalForms,
 } from './Form';
 import { navigate, useQueryParams } from 'raviger';
+import Header from '../Header';
 
 export function Home() {
   const [{ search }, setQuery] = useQueryParams();
@@ -27,20 +28,23 @@ export function Home() {
     setFormsState(getLocalForms());
   };
 
-  useEffect(()=>{
+  useEffect(() => {
     navigate(`/?search=${searchString}`);
-  },[searchString])
+  }, [searchString]);
 
   return (
     <>
+      <Header/>
       <p className="font-medium font-worksans text-center mb-5">
         Welcome to the Home Page!
       </p>
 
-      <form onSubmit={(e) => {
-        e.preventDefault();
-        setQuery({search: searchString});
-      }}>
+      <form
+        onSubmit={(e) => {
+          e.preventDefault();
+          setQuery({ search: searchString });
+        }}
+      >
         <input
           type="search"
           value={searchString}
@@ -54,15 +58,19 @@ export function Home() {
       </form>
 
       <div>
-        {formsState.filter((form) => form.title.toLowerCase().includes(search?.toLowerCase())).map((form) => (
-          <ListELem
-            formName={form.title}
-            key={form.id}
-            id={form.id}
-            // openFormsCB={() => (window.location.href = `forms/${form.id}`)}
-            removeFormsCB={removeForm}
-          />
-        ))}
+        {formsState
+          .filter((form) =>
+            form.title.toLowerCase().includes(search?.toLowerCase())
+          )
+          .map((form) => (
+            <ListELem
+              formName={form.title}
+              key={form.id}
+              id={form.id}
+              // openFormsCB={() => (window.location.href = `forms/${form.id}`)}
+              removeFormsCB={removeForm}
+            />
+          ))}
       </div>
 
       {formsState.length === 0 ? (

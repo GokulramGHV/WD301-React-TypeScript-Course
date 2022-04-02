@@ -2,7 +2,7 @@ import { ActiveLink, Link } from 'raviger';
 import React from 'react';
 import logo from './logo.svg';
 
-export default function Header(props: { title: string }) {
+export default function Header() {
   return (
     <div className="flex items-center m-1">
       <img
