@@ -1,4 +1,5 @@
 import { totalmem } from 'os';
+import { Link, navigate } from 'raviger';
 import React, { useState, useEffect, useRef } from 'react';
 import UserInput from './UserInput';
 
@@ -55,6 +56,10 @@ export function Form(props: { formID: number }) {
   const [newField, setNewField] = useState('');
   const [state, setState] = useState(() => initialState(props.formID));
   const titleRef = useRef<HTMLInputElement>(null);
+
+  useEffect(() => {
+    state.id !== props.formID && navigate(`/forms/${state.id}`);
+  }, [state.id, props.formID]);
 
   useEffect(() => {
     document.title = 'Form Editor';
@@ -189,12 +194,12 @@ export function Form(props: { formID: number }) {
         >
           Save
         </button>
-        <button
-          className="ml-3 w-32 bg-blue-500 font-medium font-worksans rounded-lg px-4 py-2 my-2 text-white hover:bg-blue-700 smooth-effect"
-          onClick={() => (window.location.href = '/')}
+        <Link
+          href="/"
+          className="ml-3 w-32 bg-blue-500 font-medium font-worksans rounded-lg px-4 py-2.5 my-2 text-white hover:bg-blue-700 smooth-effect"
         >
           Close Form
-        </button>
+        </Link>
       </div>
     </div>
   );

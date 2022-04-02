@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useEffect, useState } from 'react';
 import ListELem from './ListElem';
 import {
   formData,
@@ -6,7 +6,7 @@ import {
   getLocalForms,
   saveLocalForms,
 } from './Form';
-import { useQueryParams } from 'raviger';
+import { navigate, useQueryParams } from 'raviger';
 
 export function Home() {
   const [{ search }, setQuery] = useQueryParams();
@@ -27,6 +27,10 @@ export function Home() {
     setFormsState(getLocalForms());
   };
 
+  useEffect(()=>{
+    navigate(`/?search=${searchString}`);
+  },[searchString])
+
   return (
     <>
       <p className="font-medium font-worksans text-center mb-5">
@@ -42,7 +46,6 @@ export function Home() {
           value={searchString}
           onChange={(e) => {
             setSearchString(e.target.value);
-            // this.form.submit();
           }}
           name="search"
           placeholder=" 🔎 Search "
@@ -56,7 +59,7 @@ export function Home() {
             formName={form.title}
             key={form.id}
             id={form.id}
-            openFormsCB={() => (window.location.href = `forms/${form.id}`)}
+            // openFormsCB={() => (window.location.href = `forms/${form.id}`)}
             removeFormsCB={removeForm}
           />
         ))}
