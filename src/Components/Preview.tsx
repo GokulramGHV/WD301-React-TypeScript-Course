@@ -1,3 +1,4 @@
+import { Link } from 'raviger';
 import React, { useState, useEffect, useRef } from 'react';
 import PreviewInput from './PreviewInput';
 
@@ -87,6 +88,12 @@ export default function Preview(props: { formID: number }) {
 
   return (
     <div className="p-2">
+      <Link
+        href="/"
+        className="float-right text-2xl text-gray-600 hover:text-gray-700 smooth-effect"
+      >
+        <i className="fa-solid fa-circle-xmark"></i>
+      </Link>
       <div className="text-3xl font-semibold mb-2">{state.title}</div>
       <div className="text-gray-400 mb-4">
         Question {quesNo + 1} of {state.formFields.length}{' '}
@@ -125,6 +132,11 @@ export default function Preview(props: { formID: number }) {
           <button
             onClick={(_) => {
               saveFormResponse(state);
+              let alertText = '';
+              state.formFields.forEach((field, i) => {
+                alertText = alertText + `${i+1}. ${field.label}\n` + `Ans: ${field.value}\n\n`;
+              });
+              alert(alertText + 'Thanks for responding!');
             }}
             className="float-right w-28 shadow-md bg-blue-500 font-medium font-worksans rounded-lg px-2 py-2 my-2 text-white hover:bg-blue-700 smooth-effect"
           >

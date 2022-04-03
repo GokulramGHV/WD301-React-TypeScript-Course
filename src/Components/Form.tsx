@@ -18,9 +18,9 @@ export interface formField {
 export const initialFormFields: formField[] = [
   { id: 1, label: 'First Name', type: 'text', value: '' },
   { id: 2, label: 'Last Name', type: 'text', value: '' },
-  { id: 3, label: 'Email', type: 'email', value: '' },
-  { id: 4, label: 'Date of Birth', type: 'date', value: '' },
-  { id: 5, label: 'Phone Number', type: 'number', value: '' },
+  { id: 3, label: 'Email', type: 'text', value: '' },
+  { id: 4, label: 'Date of Birth', type: 'text', value: '' },
+  { id: 5, label: 'Phone Number', type: 'text', value: '' },
 ];
 
 export const getLocalForms: () => formData[] = () => {
@@ -114,7 +114,7 @@ export function Form(props: { formID: number }) {
       return {
         ...state,
         formFields: state.formFields.map((s) => {
-          return { ...s, value: '' };
+          return { ...s, label: '' };
         }),
       };
     });
@@ -125,7 +125,7 @@ export function Form(props: { formID: number }) {
       return {
         ...state,
         formFields: state.formFields.map((s) => {
-          if (s.id === id) return { ...s, value: val };
+          if (s.id === id) return { ...s, label: val }; // changed from value to label
           return s;
         }),
       };
@@ -150,13 +150,14 @@ export function Form(props: { formID: number }) {
         />
 
         <div className="mb-2">
+          <div className='mt-3'></div>
           {state.formFields.map((field) => (
             <UserInput
               id={field.id}
               key={field.id}
               label={field.label}
               type={field.type}
-              value={field.value}
+              value={field.label} // changed from field.value to field.label
               removeFieldCB={removeField}
               onChangeCB={onChangeField}
             />
