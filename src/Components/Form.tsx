@@ -18,9 +18,9 @@ export interface formField {
 export const initialFormFields: formField[] = [
   { id: 1, label: 'First Name', type: 'text', value: '' },
   { id: 2, label: 'Last Name', type: 'text', value: '' },
-  { id: 3, label: 'Email', type: 'text', value: '' },
-  { id: 4, label: 'Date of Birth', type: 'text', value: '' },
-  { id: 5, label: 'Phone Number', type: 'text', value: '' },
+  { id: 3, label: 'Email', type: 'email', value: '' },
+  { id: 4, label: 'Date of Birth', type: 'date', value: '' },
+  { id: 5, label: 'Phone Number', type: 'number', value: '' },
 ];
 
 export const getLocalForms: () => formData[] = () => {
@@ -53,8 +53,22 @@ const saveFormData = (currentState: formData) => {
   saveLocalForms(updatedLocalForms);
 };
 
+export interface fieldType {
+  id: number;
+  name: string;
+}
+
+export const fieldTypes: fieldType[] = [
+  { id: 1, name: 'text' },
+  { id: 2, name: 'date' },
+  { id: 3, name: 'number' },
+  { id: 4, name: 'email' },
+  { id: 5, name: 'time' },
+];
+
 export function Form(props: { formID: number }) {
   const [newField, setNewField] = useState('');
+  const [newFieldType, setNewFieldType] = useState('text');
   const [state, setState] = useState(() => initialState(props.formID));
   const titleRef = useRef<HTMLInputElement>(null);
 
@@ -91,7 +105,7 @@ export function Form(props: { formID: number }) {
           {
             id: Number(new Date()),
             label: newField,
-            type: 'text',
+            type: newFieldType,
             value: '',
           },
         ],
@@ -132,6 +146,18 @@ export function Form(props: { formID: number }) {
     });
   };
 
+  const changeFieldType = (fieldType: string, id: number) => {
+    setState((state) => {
+      return {
+        ...state,
+        formFields: state.formFields.map((s) => {
+          if (s.id === id) return { ...s, type: fieldType };
+          return s;
+        }),
+      };
+    });
+  };
+
   return (
     <>
       <Header />
@@ -150,7 +176,7 @@ export function Form(props: { formID: number }) {
         />
 
         <div className="mb-2">
-          <div className='mt-3'></div>
+          <div className="mt-3"></div>
           {state.formFields.map((field) => (
             <UserInput
               id={field.id}
@@ -160,6 +186,7 @@ export function Form(props: { formID: number }) {
               value={field.label} // changed from field.value to field.label
               removeFieldCB={removeField}
               onChangeCB={onChangeField}
+              changeTypeCB={changeFieldType}
             />
           ))}
         </div>
@@ -176,8 +203,26 @@ export function Form(props: { formID: number }) {
               className=" flex-1 border-2 border-gray-300 rounded-lg p-2 mt-1 mb-2 smooth-effect hover:border-blue-400 hover:ring-blue-400 focus:ring-blue-400 focus:border-blue-400"
             />
 
+            <select
+              name="types"
+              id="types"
+              onChange={(e) => {
+                let fieldType = e.target.value;
+                setNewFieldType((type) => fieldType);
+              }}
+              className=" border-2 border-gray-300 rounded-lg p-2 mt-1 mb-2 ml-3 w-28 smooth-effect hover:border-blue-400 hover:ring-blue-400 focus:ring-blue-400 focus:border-blue-400"
+            >
+              {fieldTypes.map((Type) => {
+                return (
+                  <option key={Type.id} value={Type.name}>
+                    {Type.name}
+                  </option>
+                );
+              })}
+            </select>
+
             <button
-              className="ml-3 w-32 bg-blue-500 font-medium font-worksans rounded-lg px-4 py-2 my-2 text-white hover:bg-blue-700 smooth-effect"
+              className="ml-3 w-28 bg-blue-500 font-medium font-worksans rounded-lg px-4 py-2 my-2 text-white hover:bg-blue-700 smooth-effect"
               onClick={addField}
             >
               Add Field
