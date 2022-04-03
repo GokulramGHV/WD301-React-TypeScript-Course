@@ -1,13 +1,9 @@
 import React, { useEffect, useState } from 'react';
 import ListELem from './ListElem';
-import {
-    formData,
-    initialFormFields,
-    getLocalForms,
-    saveLocalForms,
-} from './Form';
+import { initialFormFields, getLocalForms, saveLocalForms } from './Form';
 import { navigate, useQueryParams } from 'raviger';
 import Header from '../Header';
+import { formData } from '../types/formTypes';
 
 export function Home() {
     const [{ search }, setQuery] = useQueryParams();

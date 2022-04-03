@@ -1,8 +1,8 @@
 import { Link } from 'raviger';
 import React, { useState } from 'react';
-import { formData, getLocalForms } from './Form';
+import { getLocalForms } from './Form';
 import PreviewInput from './PreviewInput';
-
+import { formResponse, fieldResponse, formData } from '../types/formTypes';
 const getLocalResponses: () => formData[] = () => {
     const savedFormsJSON = localStorage.getItem('savedFormResponses');
     return savedFormsJSON ? JSON.parse(savedFormsJSON) : [];
@@ -35,17 +35,17 @@ const saveFormResponse = (currentState: formData) => {
     saveLocalResponses([...localResponses, Response]);
 };
 
-interface fieldResponse {
-    id: number;
-    question: string;
-    answer: string;
-}
+// interface fieldResponse {
+//     id: number;
+//     question: string;
+//     answer: string;
+// }
 
-interface formResponse {
-    id: number;
-    formName: string;
-    responses: fieldResponse[];
-}
+// interface formResponse {
+//     id: number;
+//     formName: string;
+//     responses: fieldResponse[];
+// }
 
 export default function Preview(props: { formID: number }) {
     const [state, setState] = useState(() => initialState(props.formID));

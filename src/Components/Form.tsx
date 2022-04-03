@@ -3,18 +3,20 @@ import { Link, navigate } from 'raviger';
 import React, { useState, useEffect, useRef } from 'react';
 import Header from '../Header';
 import UserInput from './UserInput';
+import { formData, formField } from '../types/formTypes';
 
-export interface formData {
-    id: number;
-    title: string;
-    formFields: formField[];
-}
-export interface formField {
-    id: number;
-    label: string;
-    type: string;
-    value: string;
-}
+// export interface formData {
+//     id: number;
+//     title: string;
+//     formFields: formField[];
+// }
+// export interface formField {
+//     id: number;
+//     label: string;
+//     type: string;
+//     value: string;
+// }
+
 export const initialFormFields: formField[] = [
     { id: 1, label: 'First Name', type: 'text', value: '' },
     { id: 2, label: 'Last Name', type: 'text', value: '' },
