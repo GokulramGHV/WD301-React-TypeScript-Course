@@ -1,32 +1,14 @@
 import { Link } from 'raviger';
-import React, { useState, useEffect, useRef } from 'react';
+import React, { useState } from 'react';
+import {
+  formData,
+  initialFormFields,
+  getLocalForms,
+} from './Form';
 import PreviewInput from './PreviewInput';
 
-export interface formData {
-  id: number;
-  title: string;
-  formFields: formField[];
-}
-export interface formField {
-  id: number;
-  label: string;
-  type: string;
-  value: string;
-}
-export const initialFormFields: formField[] = [
-  { id: 1, label: 'First Name', type: 'text', value: '' },
-  { id: 2, label: 'Last Name', type: 'text', value: '' },
-  { id: 3, label: 'Email', type: 'email', value: '' },
-  { id: 4, label: 'Date of Birth', type: 'date', value: '' },
-  { id: 5, label: 'Phone Number', type: 'number', value: '' },
-];
 
-export const getLocalForms: () => formData[] = () => {
-  const savedFormsJSON = localStorage.getItem('savedForms');
-  return savedFormsJSON ? JSON.parse(savedFormsJSON) : [];
-};
-
-export const getLocalResponses: () => formData[] = () => {
+const getLocalResponses: () => formData[] = () => {
   const savedFormsJSON = localStorage.getItem('savedFormResponses');
   return savedFormsJSON ? JSON.parse(savedFormsJSON) : [];
 };
@@ -41,11 +23,11 @@ const initialState: (id: number) => formData = (id: number) => {
     title: 'Untitled Form',
     formFields: initialFormFields,
   };
-  // saveLocalForms([...localForms, newForm]);
+  // saveLocalResponses([...localForms, newForm]);
   return newForm;
 };
 
-export const saveLocalForms = (localForm: formData[]) => {
+const saveLocalResponses = (localForm: formData[]) => {
   localStorage.setItem('savedFormResponses', JSON.stringify(localForm));
 };
 
@@ -59,7 +41,7 @@ const saveFormResponse = (currentState: formData) => {
     title: currentState.title,
     formFields: currentState.formFields,
   };
-  saveLocalForms([...localResponses, Response]);
+  saveLocalResponses([...localResponses, Response]);
 };
 
 export default function Preview(props: { formID: number }) {
