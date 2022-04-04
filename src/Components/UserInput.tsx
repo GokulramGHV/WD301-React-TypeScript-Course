@@ -1,5 +1,5 @@
 import React from 'react';
-import { fieldTypes } from './Form';
+import { listOfTypes } from '../types/formTypes';
 
 export default function UserInput(props: {
     id: number;
@@ -33,10 +33,10 @@ export default function UserInput(props: {
                     value={props.type}
                     className=" border-2 border-gray-300 rounded-lg p-2 mt-1 mb-2 ml-3 w-28 smooth-effect hover:border-blue-400 hover:ring-blue-400 focus:ring-blue-400 focus:border-blue-400"
                 >
-                    {fieldTypes.map((Type) => {
+                    {listOfTypes.map((Type, index) => {
                         return (
-                            <option key={Type.id} value={Type.name}>
-                                {Type.name}
+                            <option key={index} value={Type}>
+                                {Type}
                             </option>
                         );
                     })}
