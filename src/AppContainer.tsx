@@ -8,7 +8,7 @@ export default function AppContainer(props: { children: React.ReactNode }) {
       style={{ height: '100vh' }}
     >
       <div
-        className="px-4 py-2 mx-auto bg-white shadow-lg rounded-xl"
+        className="px-4 py-2 my-5 mx-auto bg-white shadow-lg rounded-xl"
         style={{ width: '75vh' }}
       >
         {props.children}
