@@ -149,10 +149,73 @@ export default function Preview(props: { formID: number }) {
                         type="radio"
                         id={`${opt}${index}`}
                         name={currentField.label}
+                        className="flex-1 border-2 border-gray-300 rounded-full p-2 mt-1 mb-2 smooth-effect hover:border-blue-400 hover:ring-blue-400 focus:ring-blue-400 focus:border-blue-400"
                         value={opt}
                         onChange={(e) => {
                           let value = e.target.value;
                           onChangeField(value, currentField.id);
+                        }}
+                      />
+                      <label className="ml-2" htmlFor={`${opt}${index}`}>
+                        {opt}
+                      </label>
+                    </div>
+                  ))}
+                </div>
+              </div>
+            );
+          else if (currentField.kind === 'multipleSelect')
+            return (
+              <div>
+                <div className="text-2xl mb-2">
+                  <label>{currentField.label}</label>
+                </div>
+                <button
+                  data-bs-toggle="collapse" // {`collapse`}
+                  data-bs-target={`#collapse${currentField.id}`}
+                  aria-expanded="false"
+                  aria-controls={`collapse${currentField.id}`}
+                  className="w-full flex-1 border-2 border-gray-300 rounded-lg p-2 mb-2 smooth-effect hover:border-blue-400 hover:ring-blue-400 focus:ring-blue-400 focus:border-blue-400"
+                >
+                  <div className="float-left pl-2" id="Multi">
+                    --- Select options ---
+                  </div>
+                  <div className="float-right text-gray-500 pr-2">
+                    <i className="fa-solid fa-angle-down"></i>
+                  </div>
+                </button>
+                <div
+                  className="flex gap-5 flex-col collapse bg-gray-100 rounded-lg p-5"
+                  id={`collapse${currentField.id}`}
+                >
+                  {currentField.options.map((opt, index) => (
+                    <div key={index}>
+                      <input
+                        type="checkbox"
+                        id={`${opt}${index}`}
+                        name={currentField.label}
+                        value={opt}
+                        className="flex-1 border-2 border-gray-300 rounded-lg p-2 mt-1 mb-2 smooth-effect hover:border-blue-400 hover:ring-blue-400 focus:ring-blue-400 focus:border-blue-400"
+                        onChange={(e) => {
+                          let value = e.target.value;
+                          let elem = document.getElementById('Multi');
+                          if (elem) {
+                            let valArray = elem.innerHTML.split(', ');
+
+                            if (valArray.includes(''))
+                              valArray.splice(valArray.indexOf(''), 1);
+
+                            if (valArray.includes('--- Select options ---'))
+                              valArray.splice(
+                                valArray.indexOf('--- Select options ---'),
+                                1
+                              );
+                            if (valArray.includes(value))
+                              valArray.splice(valArray.indexOf(value), 1);
+                            else valArray.push(value);
+                            elem.innerHTML = valArray.join(', ');
+                            onChangeField(elem.innerHTML, currentField.id);
+                          }
                         }}
                       />
                       <label className="ml-2" htmlFor={`${opt}${index}`}>

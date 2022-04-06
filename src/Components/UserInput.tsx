@@ -21,6 +21,7 @@ export default function UserInput(props: {
                         let value = e.target.value;
                         props.onChangeCB(value, props.id);
                     }}
+                    title="TextField"
                     className="flex-1 border-2 border-gray-300 rounded-lg p-2 mt-1 mb-2 smooth-effect hover:border-blue-400 hover:ring-blue-400 focus:ring-blue-400 focus:border-blue-400"
                 />
                 <select

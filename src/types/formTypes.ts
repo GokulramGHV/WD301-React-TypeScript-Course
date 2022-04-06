@@ -56,7 +56,7 @@ export type radioInputField = {
 
 export type multipleSelectField = {
     id: number;
-    kind: "radioInput";
+    kind: "multipleSelect";
     label: string;
     type: textFieldTypes;
     options: string[];

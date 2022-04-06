@@ -9,7 +9,7 @@ import {
   textField,
   textFieldTypes,
 } from '../types/formTypes';
-import { OptionsEditor } from './OptionsEditor';
+import { InputOptionsEditor, OptionsEditor } from './OptionsEditor';
 import TextAreaInput from './TextAreaInput';
 
 // export interface formData {
@@ -165,6 +165,21 @@ export function Form(props: { formID: number }) {
             },
           ],
         });
+      } else if (newFieldType === 'multipleSelect') {
+        setState({
+          ...state,
+          formFields: [
+            ...state.formFields,
+            {
+              id: Number(new Date()),
+              label: newField,
+              kind: 'multipleSelect',
+              options: [],
+              type: 'text',
+              value: '',
+            },
+          ],
+        });
       }
 
       setNewField('');
@@ -221,9 +236,13 @@ export function Form(props: { formID: number }) {
       return {
         ...state,
         formFields: state.formFields.map((s) => {
-          if (s.kind === 'dropdown' || s.kind === 'radioInput') {
+          if (
+            s.kind === 'dropdown' ||
+            s.kind === 'radioInput' ||
+            s.kind === 'multipleSelect'
+          ) {
             if (s.id === fieldId) return { ...s, options: [...opts] };
-          } 
+          }
           // console.log(s);
           return s;
         }),
@@ -268,46 +287,12 @@ export function Form(props: { formID: number }) {
 
               case 'dropdown':
                 return (
-                  <div key={field.id}>
-                    <div className="flex">
-                      <input
-                        type="text"
-                        value={field.label}
-                        onChange={(e) => {
-                          let value = e.target.value;
-                          onChangeField(value, field.id);
-                        }}
-                        className="flex-1 border-2 border-gray-300 rounded-lg p-2 mt-1 mb-2 smooth-effect hover:border-blue-400 hover:ring-blue-400 focus:ring-blue-400 focus:border-blue-400"
-                      />
-                      <button
-                        className="ml-3 w-28 bg-blue-500 font-medium font-worksans rounded-lg px-2 py-2 my-2 text-white hover:bg-blue-700 smooth-effect"
-                        type="button"
-                        data-bs-toggle={`collapse`}
-                        data-bs-target={`#collapse${field.id}`}
-                        aria-expanded="false"
-                        aria-controls={`collapse${field.id}`}
-                        data-mdb-ripple="true"
-                      >
-                        Edit
-                      </button>
-                      <button
-                        className="ml-3 w-28 bg-blue-500 font-medium font-worksans rounded-lg px-2 py-2 my-2 text-white hover:bg-blue-700 smooth-effect"
-                        onClick={(_) => removeField(field.id)}
-                      >
-                        Remove
-                      </button>
-                    </div>
-                    <div className={`collapse`} id={`collapse${field.id}`}>
-                      <OptionsEditor
-                        fieldID={field.id}
-                        fieldKind={field.kind}
-                        key={field.id}
-                        fieldLabel={field.label}
-                        fieldOptions={field.options}
-                        changeOptionsCB={changeOptions}
-                      />
-                    </div>
-                  </div>
+                  <InputOptionsEditor
+                    field={field}
+                    onChangeFieldCB={onChangeField}
+                    changeOptionsCB={changeOptions}
+                    removeFieldCB={removeField}
+                  />
                 );
               case 'textArea':
                 return (
@@ -321,48 +306,25 @@ export function Form(props: { formID: number }) {
                     onChangeCB={onChangeField}
                   />
                 );
+
               case 'radioInput':
                 return (
-                  <div key={field.id}>
-                    <div className="flex">
-                      <input
-                        type="text"
-                        value={field.label}
-                        onChange={(e) => {
-                          let value = e.target.value;
-                          onChangeField(value, field.id);
-                        }}
-                        className="flex-1 border-2 border-gray-300 rounded-lg p-2 mt-1 mb-2 smooth-effect hover:border-blue-400 hover:ring-blue-400 focus:ring-blue-400 focus:border-blue-400"
-                      />
-                      <button
-                        className="ml-3 w-28 bg-blue-500 font-medium font-worksans rounded-lg px-2 py-2 my-2 text-white hover:bg-blue-700 smooth-effect"
-                        type="button"
-                        data-bs-toggle=  "collapse" // {`collapse`}
-                        data-bs-target={`#collapse${field.id}`}
-                        aria-expanded="false"
-                        aria-controls={`collapse${field.id}`}
-                        data-mdb-ripple="true"
-                      >
-                        Edit
-                      </button>
-                      <button
-                        className="ml-3 w-28 bg-blue-500 font-medium font-worksans rounded-lg px-2 py-2 my-2 text-white hover:bg-blue-700 smooth-effect"
-                        onClick={(_) => removeField(field.id)}
-                      >
-                        Remove
-                      </button>
-                    </div>
-                    <div className={`collapse`} id={`collapse${field.id}`}>
-                      <OptionsEditor
-                        fieldID={field.id}
-                        fieldKind={field.kind}
-                        key={field.id}
-                        fieldLabel={field.label}
-                        fieldOptions={field.options}
-                        changeOptionsCB={changeOptions}
-                      />
-                    </div>
-                  </div>
+                  <InputOptionsEditor
+                    field={field}
+                    onChangeFieldCB={onChangeField}
+                    changeOptionsCB={changeOptions}
+                    removeFieldCB={removeField}
+                  />
+                );
+
+              case 'multipleSelect':
+                return (
+                  <InputOptionsEditor
+                    field={field}
+                    onChangeFieldCB={onChangeField}
+                    changeOptionsCB={changeOptions}
+                    removeFieldCB={removeField}
+                  />
                 );
             }
           })}
@@ -393,6 +355,7 @@ export function Form(props: { formID: number }) {
               <option value="dropdown">Dropdown</option>
               <option value="textArea">TextArea</option>
               <option value="radioInput">RadioInput</option>
+              <option value="multipleSelect">MultipeSelect</option>
             </select>
 
             <button
