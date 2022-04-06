@@ -25,10 +25,16 @@ export type textField = {
     kind: "text";
     label: string;
     type: textFieldTypes;
-    // options: string[];
     value: string;
 }
 
+export type textAreaField = {
+    id: number;
+    kind: "textArea";
+    label: string;
+    type: textFieldTypes;
+    value: string;
+}
 
 export type dropDownField = {
     id: number;
@@ -39,4 +45,22 @@ export type dropDownField = {
     value: string;
 }
 
-export type formField = textField | dropDownField;
+export type radioInputField = {
+    id: number;
+    kind: "radioInput";
+    label: string;
+    type: textFieldTypes;
+    options: string[];
+    value: string;
+}
+
+export type multipleSelectField = {
+    id: number;
+    kind: "radioInput";
+    label: string;
+    type: textFieldTypes;
+    options: string[];
+    value: string;
+}
+
+export type formField = textField | dropDownField | textAreaField | radioInputField | multipleSelectField;

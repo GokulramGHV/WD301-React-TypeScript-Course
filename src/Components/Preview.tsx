@@ -1,8 +1,14 @@
 import { Link } from 'raviger';
-import React, { useState } from 'react';
+import React, { useEffect, useState } from 'react';
 import { getLocalForms } from './Form';
 import PreviewInput from './PreviewInput';
-import { formResponse, fieldResponse, formData } from '../types/formTypes';
+import {
+  formResponse,
+  fieldResponse,
+  formData,
+  formField,
+} from '../types/formTypes';
+import PreviewDropdown from './PreviewDropdown';
 const getLocalResponses: () => formData[] = () => {
   const savedFormsJSON = localStorage.getItem('savedFormResponses');
   return savedFormsJSON ? JSON.parse(savedFormsJSON) : [];
@@ -56,6 +62,10 @@ export default function Preview(props: { formID: number }) {
     responses: [],
   });
 
+  useEffect(() => {
+    console.log(answers);
+  }, [answers]);
+
   const nextQues = () => {
     setQuesNo((quesNo) => (state.formFields[quesNo + 1] ? quesNo + 1 : quesNo));
   };
@@ -91,35 +101,69 @@ export default function Preview(props: { formID: number }) {
           Question {quesNo + 1} of {state.formFields.length}{' '}
         </div>
 
-        {currentField.kind === 'text' ? (
-          <PreviewInput
-            id={currentField.id}
-            label={currentField.label}
-            type={currentField.type}
-            value={currentField.value}
-            onChangeCB={onChangeField}
-          />
-        ) : (
-          <div>
-            <div className="text-2xl mb-1">
-              <label>{currentField.label}</label>
-            </div>
-            <select
-              name="dropdown"
-              id="dropdown"
-              onChange={(e) => {
-                let value = e.target.value;
-                onChangeField(value, currentField.id);
-              }}
-              className="w-full border-2 border-gray-300 rounded-lg p-2 mt-1 mb-2 smooth-effect hover:border-blue-400 hover:ring-blue-400 focus:ring-blue-400 focus:border-blue-400"
-            >
-              <option value="" hidden> --- Select an option --- </option>
-              {currentField.options.map((opt) => (
-                <option value={opt}>{opt}</option>
-              ))}
-            </select>
-          </div>
-        )}
+        {((currentField: formField) => {
+          if (currentField.kind === 'text')
+            return (
+              <PreviewInput
+                id={currentField.id}
+                label={currentField.label}
+                type={currentField.type}
+                value={currentField.value}
+                onChangeCB={onChangeField}
+              />
+            );
+          else if (currentField.kind === 'dropdown')
+            return (
+              <PreviewDropdown
+                field={currentField}
+                onChangeFieldCB={onChangeField}
+              />
+            );
+          else if (currentField.kind === 'textArea')
+            return (
+              <div>
+                <div className="text-2xl mb-1">
+                  <label>{currentField.label}</label>
+                </div>
+                <textarea
+                  className="w-full flex-1 border-2 border-gray-300 rounded-lg p-2 mt-1 mb-2 smooth-effect hover:border-blue-400 hover:ring-blue-400 focus:ring-blue-400 focus:border-blue-400"
+                  name={currentField.label}
+                  id={String(currentField.id)}
+                  onChange={(e) => {
+                    let value = e.target.value;
+                    onChangeField(value, currentField.id);
+                  }}
+                ></textarea>
+              </div>
+            );
+          else if (currentField.kind === 'radioInput')
+            return (
+              <div>
+                <div className="text-2xl mb-4">
+                  <label>{currentField.label}</label>
+                </div>
+                <div className="flex gap-5 flex-wrap">
+                  {currentField.options.map((opt, index) => (
+                    <div key={index}>
+                      <input
+                        type="radio"
+                        id={`${opt}${index}`}
+                        name={currentField.label}
+                        value={opt}
+                        onChange={(e) => {
+                          let value = e.target.value;
+                          onChangeField(value, currentField.id);
+                        }}
+                      />
+                      <label className="ml-2" htmlFor={`${opt}${index}`}>
+                        {opt}
+                      </label>
+                    </div>
+                  ))}
+                </div>
+              </div>
+            );
+        })(currentField)}
 
         <div className="mt-3">
           {state.formFields[quesNo - 1] && (
@@ -162,7 +206,6 @@ export default function Preview(props: { formID: number }) {
                   return { ...ans, responses: FormRespones };
                 });
 
-                console.log(answers);
                 alert(alertText + 'Thanks for responding!');
               }}
               className="float-right w-28 shadow-md bg-blue-500 font-medium font-worksans rounded-lg px-2 py-2 my-2 text-white hover:bg-blue-700 smooth-effect"
