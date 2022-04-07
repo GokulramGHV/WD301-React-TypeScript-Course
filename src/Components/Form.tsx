@@ -62,18 +62,7 @@ const saveFormData = (currentState: formData) => {
   saveLocalForms(updatedLocalForms);
 };
 
-// export interface fieldType {
-//     id: number;
-//     name: string;
-// }
 
-// export const fieldTypes: fieldType[] = [
-//     { id: 1, name: 'text' },
-//     { id: 2, name: 'date' },
-//     { id: 3, name: 'number' },
-//     { id: 4, name: 'email' },
-//     { id: 5, name: 'time' },
-// ];
 
 export function Form(props: { formID: number }) {
   const [newField, setNewField] = useState('');
