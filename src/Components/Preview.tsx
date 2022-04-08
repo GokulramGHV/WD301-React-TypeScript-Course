@@ -1,5 +1,5 @@
 import { Link } from 'raviger';
-import React, { useEffect, useState } from 'react';
+import React, { useEffect, useReducer, useState } from 'react';
 import { getLocalForms } from './Form';
 import PreviewInput from './PreviewInput';
 import {
@@ -9,11 +9,6 @@ import {
   formField,
 } from '../types/formTypes';
 import PreviewDropdown from './PreviewDropdown';
-
-// const getLocalResponses: () => formData[] = () => {
-//   const savedFormsJSON = localStorage.getItem('savedFormResponses');
-//   return savedFormsJSON ? JSON.parse(savedFormsJSON) : [];
-// };
 
 const initialState: (id: number) => formData = (id: number) => {
   const localForms = getLocalForms();
@@ -28,35 +23,59 @@ const initialState: (id: number) => formData = (id: number) => {
   return newForm;
 };
 
-// const saveLocalResponses = (localForm: formData[]) => {
-//   localStorage.setItem('savedFormResponses', JSON.stringify(localForm));
-// };
 
-// const saveFormResponse = (currentState: formData) => {
-//   const localResponses = getLocalResponses();
-//   const Response = {
-//     id: Number(new Date()),
-//     title: currentState.title,
-//     formFields: currentState.formFields,
-//   };
-//   saveLocalResponses([...localResponses, Response]);
-// };
 
-// interface fieldResponse {
-//     id: number;
-//     question: string;
-//     answer: string;
-// }
+type OnChangeFieldAction = {
+  // when the value of the field is changed this action is invoked
+  type: 'on_change_field';
+  value: string;
+  fieldID: number;
+};
 
-// interface formResponse {
-//     id: number;
-//     formName: string;
-//     responses: fieldResponse[];
-// }
+// Action Reducer
+type FormActions = OnChangeFieldAction;
+const stateReducer = (state: formData, action: FormActions) => {
+  switch (action.type) {
+    case 'on_change_field': {
+      return {
+        ...state,
+        formFields: state.formFields.map((s) => {
+          if (s.id === action.fieldID) return { ...s, value: action.value };
+          return s;
+        }),
+      };
+    }
+  }
+};
+
+type NextQues = {
+  type: 'next_ques',
+  formFields: formField[]
+}
+
+type PrevQues = {
+  type: 'prev_ques',
+  formFields: formField[]
+}
+
+type QuesNoActions = NextQues | PrevQues;
+
+const quesNoReducer = (quesNo: number, action: QuesNoActions) => {
+  switch(action.type) {
+    case 'next_ques': {
+      return (action.formFields[quesNo + 1] ? quesNo + 1 : quesNo)
+    }
+    case 'prev_ques': {
+      return (action.formFields[quesNo - 1] ? quesNo - 1 : quesNo)
+    }
+  }
+};
 
 export default function Preview(props: { formID: number }) {
-  const [state, setState] = useState(() => initialState(props.formID));
-  const [quesNo, setQuesNo] = useState(0);
+  const [state, dispatch] = useReducer(stateReducer, null, () =>
+    initialState(props.formID)
+  );
+  const [quesNo, dispatchQuesNo] = useReducer(quesNoReducer,0);
   const [answers, setAnswers] = useState<formResponse>({
     id: Number(new Date()),
     formName: state.title,
@@ -66,25 +85,6 @@ export default function Preview(props: { formID: number }) {
   useEffect(() => {
     console.log(answers);
   }, [answers]);
-
-  const nextQues = () => {
-    setQuesNo((quesNo) => (state.formFields[quesNo + 1] ? quesNo + 1 : quesNo));
-  };
-  const prevQues = () => {
-    setQuesNo((quesNo) => (state.formFields[quesNo - 1] ? quesNo - 1 : quesNo));
-  };
-
-  const onChangeField = (val: string, id: number) => {
-    setState((state) => {
-      return {
-        ...state,
-        formFields: state.formFields.map((s) => {
-          if (s.id === id) return { ...s, value: val };
-          return s;
-        }),
-      };
-    });
-  };
 
   let currentField = state.formFields[quesNo];
 
@@ -110,14 +110,26 @@ export default function Preview(props: { formID: number }) {
                 label={currentField.label}
                 type={currentField.type}
                 value={currentField.value}
-                onChangeCB={onChangeField}
+                onChangeCB={(val, id) =>
+                  dispatch({
+                    type: 'on_change_field',
+                    value: val,
+                    fieldID: id,
+                  })
+                }
               />
             );
           else if (currentField.kind === 'dropdown')
             return (
               <PreviewDropdown
                 field={currentField}
-                onChangeFieldCB={onChangeField}
+                onChangeFieldCB={(val, id) =>
+                  dispatch({
+                    type: 'on_change_field',
+                    value: val,
+                    fieldID: id,
+                  })
+                }
               />
             );
           else if (currentField.kind === 'textArea')
@@ -133,7 +145,11 @@ export default function Preview(props: { formID: number }) {
                   id={String(currentField.id)}
                   onChange={(e) => {
                     let value = e.target.value;
-                    onChangeField(value, currentField.id);
+                    dispatch({
+                      type: 'on_change_field',
+                      value: value,
+                      fieldID: currentField.id,
+                    });
                   }}
                 ></textarea>
               </div>
@@ -156,7 +172,11 @@ export default function Preview(props: { formID: number }) {
                         checked={currentField.value === opt}
                         onChange={(e) => {
                           let value = e.target.value;
-                          onChangeField(value, currentField.id);
+                          dispatch({
+                            type: 'on_change_field',
+                            value: value,
+                            fieldID: currentField.id,
+                          });
                         }}
                       />
                       <label className="ml-2" htmlFor={`${opt}${index}`}>
@@ -221,7 +241,11 @@ export default function Preview(props: { formID: number }) {
                                 valArray.splice(valArray.indexOf(value), 1);
                               else valArray.push(value);
                               elem.innerHTML = valArray.join(', ');
-                              onChangeField(elem.innerHTML, currentField.id);
+                              dispatch({
+                                type: 'on_change_field',
+                                value: elem.innerHTML,
+                                fieldID: currentField.id,
+                              });
                             }
                           }}
                         />
@@ -238,7 +262,10 @@ export default function Preview(props: { formID: number }) {
         <div className="mt-3">
           {state.formFields[quesNo - 1] && (
             <button
-              onClick={prevQues}
+              onClick={(_) => dispatchQuesNo({
+                type:'prev_ques',
+                formFields:state.formFields
+              })}
               className="mr-3 shadow-lg w-10 bg-blue-500 font-medium font-worksans rounded-full px-2 py-2 my-2 text-white hover:bg-blue-700 smooth-effect"
             >
               <i className="fas fa-arrow-left"></i>
@@ -247,7 +274,10 @@ export default function Preview(props: { formID: number }) {
 
           {state.formFields[quesNo + 1] && (
             <button
-              onClick={nextQues}
+              onClick={(_) => dispatchQuesNo({
+                type:'next_ques',
+                formFields:state.formFields
+              })}
               className="mr-3 shadow-lg w-10 bg-blue-500 font-medium font-worksans rounded-full px-2 py-2 my-2 text-white hover:bg-blue-700 smooth-effect"
             >
               <i className="fas fa-arrow-right"></i>
