@@ -1,28 +1,20 @@
 // import { totalmem } from 'os';
 import { Link, navigate } from 'raviger';
-import React, { useState, useEffect, useRef } from 'react';
+import React, { useState, useEffect, useRef, useReducer } from 'react';
 import Header from '../Header';
 import UserInput from './UserInput';
 import {
+  dropDownField,
   formData,
   formField,
+  multipleSelectField,
+  radioInputField,
+  textAreaField,
   textField,
   textFieldTypes,
 } from '../types/formTypes';
-import { InputOptionsEditor, OptionsEditor } from './OptionsEditor';
+import { InputOptionsEditor } from './OptionsEditor';
 import TextAreaInput from './TextAreaInput';
-
-// export interface formData {
-//     id: number;
-//     title: string;
-//     formFields: formField[];
-// }
-// export interface formField {
-//     id: number;
-//     label: string;
-//     type: string;
-//     value: string;
-// }
 
 export const initialFormFields: formField[] = [
   { id: 1, kind: 'text', label: 'First Name', type: 'text', value: '' },
@@ -62,12 +54,231 @@ const saveFormData = (currentState: formData) => {
   saveLocalForms(updatedLocalForms);
 };
 
+type AddAction = {
+  type: 'add_field';
+  kind: string;
+  label: string;
+  callback: () => void;
+};
 
+type RemoveAction = {
+  type: 'remove_field';
+  id: number;
+};
+
+type UpdateTitleAction = {
+  type: 'update_title';
+  title: string;
+};
+
+type ChangeOptionAction = {
+  type: 'change_option';
+  options: string[];
+  fieldID: number;
+};
+
+type ResetFieldsAction = {
+  type: 'reset_fields';
+};
+
+type OnChangeFieldAction = {
+  type: 'on_change_field';
+  value: string;
+  fieldID: number;
+};
+
+type ChangeTextFieldTypeAction = {
+  type: 'change_text_field_type';
+  fieldType: string;
+  fieldID: number;
+};
+
+type FormActions =
+  | AddAction
+  | RemoveAction
+  | UpdateTitleAction
+  | ChangeOptionAction
+  | ResetFieldsAction
+  | OnChangeFieldAction
+  | ChangeTextFieldTypeAction;
+
+// Action Reducer
+const reducer = (state: formData, action: FormActions) => {
+  switch (action.type) {
+    case 'add_field': {
+      if (action.label !== '') {
+        action.callback();
+        if (action.kind === 'text') {
+          return {
+            ...state,
+            formFields: [
+              ...state.formFields,
+              {
+                id: Number(new Date()),
+                kind: action.kind,
+                label: action.label,
+                type: 'text',
+                value: '',
+              } as textField,
+            ],
+          };
+        } else if (action.kind === 'textArea') {
+          return {
+            ...state,
+            formFields: [
+              ...state.formFields,
+              {
+                id: Number(new Date()),
+                kind: action.kind,
+                label: action.label,
+                type: 'text',
+                value: '',
+              } as textAreaField,
+            ],
+          };
+        } else if (action.kind === 'dropdown') {
+          return {
+            ...state,
+            formFields: [
+              ...state.formFields,
+              {
+                id: Number(new Date()),
+                kind: action.kind,
+                label: action.label,
+                options: [],
+                type: 'text',
+                value: '',
+              } as dropDownField,
+            ],
+          };
+        } else if (action.kind === 'radioInput') {
+          return {
+            ...state,
+            formFields: [
+              ...state.formFields,
+              {
+                id: Number(new Date()),
+                kind: action.kind,
+                label: action.label,
+                options: [],
+                type: 'text',
+                value: '',
+              } as radioInputField,
+            ],
+          };
+        } else if (action.kind === 'multipleSelect') {
+          return {
+            ...state,
+            formFields: [
+              ...state.formFields,
+              {
+                id: Number(new Date()),
+                kind: action.kind,
+                label: action.label,
+                options: [],
+                type: 'text',
+                value: '',
+              } as multipleSelectField,
+            ],
+          };
+        } else {
+          return state;
+        }
+      } else {
+        return state;
+      }
+    }
+
+    case 'remove_field': {
+      return {
+        ...state,
+        formFields: state.formFields.filter((field) => field.id !== action.id),
+      };
+    }
+
+    case 'update_title': {
+      return {
+        ...state,
+        title: action.title,
+      };
+    }
+
+    case 'change_option': {
+      return {
+        ...state,
+        formFields: state.formFields.map((s) => {
+          if (
+            s.kind === 'dropdown' ||
+            s.kind === 'radioInput' ||
+            s.kind === 'multipleSelect'
+          ) {
+            if (s.id === action.fieldID)
+              return { ...s, options: [...action.options] };
+          }
+          // console.log(s);
+          return s;
+        }),
+      };
+    }
+
+    case 'reset_fields': {
+      return {
+        ...state,
+        formFields: state.formFields.map((s) => {
+          return { ...s, label: '' };
+        }),
+      };
+    }
+
+    case 'on_change_field': {
+      return {
+        ...state,
+        formFields: state.formFields.map((s) => {
+          if (s.id === action.fieldID) return { ...s, label: action.value }; // changed from value to label
+          return s;
+        }),
+      };
+    }
+
+    case 'change_text_field_type': {
+      return {
+        ...state,
+        formFields: state.formFields.map((s) => {
+          if (s.id === action.fieldID)
+            return { ...s, kind: 'text', type: action.fieldType } as textField;
+          return s;
+        }),
+      };
+    }
+  }
+};
+
+type ChangeText = {
+  type: 'change_text';
+  value: string;
+};
+
+type ClearText = {
+  type: 'clear_text';
+};
+
+type newFieldActions = ChangeText | ClearText;
+const newFieldReducer = (state: string, action: newFieldActions) => {
+  switch (action.type) {
+    case 'change_text': {
+      return action.value;
+    }
+    case 'clear_text':
+      return '';
+  }
+};
 
 export function Form(props: { formID: number }) {
-  const [newField, setNewField] = useState('');
+  const [newField, setNewField] = useReducer(newFieldReducer, '');
   const [newFieldType, setnewFieldType] = useState<textFieldTypes>('text');
-  const [state, setState] = useState(() => initialState(props.formID));
+  const [state, dispatch] = useReducer(reducer, null, () =>
+    initialState(props.formID)
+  );
   const titleRef = useRef<HTMLInputElement>(null);
 
   useEffect(() => {
@@ -81,9 +292,9 @@ export function Form(props: { formID: number }) {
     };
   }, []);
 
-  // useEffect(()=>{
-  //   titleRef.current?.focus();
-  // }, [state])
+  useEffect(()=>{
+    titleRef.current?.focus();
+  }, [])
 
   useEffect(() => {
     let timeout = setTimeout(() => {
@@ -94,159 +305,16 @@ export function Form(props: { formID: number }) {
     };
   }, [state]);
 
-  const addField = () => {
-    if (newField !== '') {
-      if (newFieldType === 'text') {
-        setState({
-          ...state,
-          formFields: [
-            ...state.formFields,
-            {
-              id: Number(new Date()),
-              label: newField,
-              kind: 'text',
-              type: 'text',
-              value: '',
-            },
-          ],
-        });
-      } else if (newFieldType === 'dropdown') {
-        setState({
-          ...state,
-          formFields: [
-            ...state.formFields,
-            {
-              id: Number(new Date()),
-              label: newField,
-              kind: 'dropdown',
-              options: [],
-              type: 'text',
-              value: '',
-            },
-          ],
-        });
-      } else if (newFieldType === 'textArea') {
-        setState({
-          ...state,
-          formFields: [
-            ...state.formFields,
-            {
-              id: Number(new Date()),
-              label: newField,
-              kind: 'textArea',
-              type: 'text',
-              value: '',
-            },
-          ],
-        });
-      } else if (newFieldType === 'radioInput') {
-        setState({
-          ...state,
-          formFields: [
-            ...state.formFields,
-            {
-              id: Number(new Date()),
-              label: newField,
-              kind: 'radioInput',
-              options: [],
-              type: 'text',
-              value: '',
-            },
-          ],
-        });
-      } else if (newFieldType === 'multipleSelect') {
-        setState({
-          ...state,
-          formFields: [
-            ...state.formFields,
-            {
-              id: Number(new Date()),
-              label: newField,
-              kind: 'multipleSelect',
-              options: [],
-              type: 'text',
-              value: '',
-            },
-          ],
-        });
-      }
-
-      setNewField('');
-    }
-  };
-
-  const removeField = (id: number) => {
-    setState((state) => {
-      return {
-        ...state,
-        formFields: state.formFields.filter((field) => field.id !== id),
-      };
-    });
-  };
-
-  const resetFields = () => {
-    setState((state) => {
-      return {
-        ...state,
-        formFields: state.formFields.map((s) => {
-          return { ...s, label: '' };
-        }),
-      };
-    });
-  };
-
-  const onChangeField = (val: string, id: number) => {
-    setState((state) => {
-      return {
-        ...state,
-        formFields: state.formFields.map((s) => {
-          if (s.id === id) return { ...s, label: val }; // changed from value to label
-          return s;
-        }),
-      };
-    });
-  };
-
-  const changeFieldType = (val: string, id: number) => {
-    setState((state) => {
-      return {
-        ...state,
-        formFields: state.formFields.map((s) => {
-          if (s.id === id)
-            return { ...s, kind: 'text', type: val } as textField;
-          return s;
-        }),
-      };
-    });
-  };
-
-  const changeOptions = (opts: string[], fieldId: number) => {
-    setState((state) => {
-      return {
-        ...state,
-        formFields: state.formFields.map((s) => {
-          if (
-            s.kind === 'dropdown' ||
-            s.kind === 'radioInput' ||
-            s.kind === 'multipleSelect'
-          ) {
-            if (s.id === fieldId) return { ...s, options: [...opts] };
-          }
-          // console.log(s);
-          return s;
-        }),
-      };
-    });
-  };
-
   return (
     <>
       <Header />
       <div className="grid grid-cols-1 divide-y-2">
         <input
           onChange={(e) => {
-            setState((state) => {
-              return { ...state, title: e.target.value };
+            dispatch({
+              type: 'update_title',
+              title: e.target.value,
+              // return { ...state, title: e.target.value };
             });
           }}
           value={state.title}
@@ -268,19 +336,54 @@ export function Form(props: { formID: number }) {
                     label={field.label}
                     type={field.type}
                     value={field.label} // changed from field.value to field.label
-                    removeFieldCB={removeField}
-                    onChangeCB={onChangeField}
-                    changeTypeCB={changeFieldType} // u need to change this
+                    removeFieldCB={(_) =>
+                      dispatch({
+                        type: 'remove_field',
+                        id: field.id,
+                      })
+                    }
+                    onChangeCB={(val, id) =>
+                      dispatch({
+                        type: 'on_change_field',
+                        value: val,
+                        fieldID: id,
+                      })
+                    }
+                    changeTypeCB={(fieldtype, id) =>
+                      dispatch({
+                        type: 'change_text_field_type',
+                        fieldType: fieldtype,
+                        fieldID: id,
+                      })
+                    }
                   />
                 );
 
               case 'dropdown':
                 return (
                   <InputOptionsEditor
+                    key={field.id}
                     field={field}
-                    onChangeFieldCB={onChangeField}
-                    changeOptionsCB={changeOptions}
-                    removeFieldCB={removeField}
+                    onChangeFieldCB={(val, id) =>
+                      dispatch({
+                        type: 'on_change_field',
+                        value: val,
+                        fieldID: id,
+                      })
+                    }
+                    changeOptionsCB={(opts, id) =>
+                      dispatch({
+                        type: 'change_option',
+                        options: opts,
+                        fieldID: id,
+                      })
+                    }
+                    removeFieldCB={(_) =>
+                      dispatch({
+                        type: 'remove_field',
+                        id: field.id,
+                      })
+                    }
                   />
                 );
               case 'textArea':
@@ -291,28 +394,75 @@ export function Form(props: { formID: number }) {
                     label={field.label}
                     type={field.type}
                     value={field.label}
-                    removeFieldCB={removeField}
-                    onChangeCB={onChangeField}
+                    removeFieldCB={(_) =>
+                      dispatch({
+                        type: 'remove_field',
+                        id: field.id,
+                      })
+                    }
+                    onChangeCB={(val, id) =>
+                      dispatch({
+                        type: 'on_change_field',
+                        value: val,
+                        fieldID: id,
+                      })
+                    }
                   />
                 );
 
               case 'radioInput':
                 return (
                   <InputOptionsEditor
+                    key={field.id}
                     field={field}
-                    onChangeFieldCB={onChangeField}
-                    changeOptionsCB={changeOptions}
-                    removeFieldCB={removeField}
+                    onChangeFieldCB={(val, id) =>
+                      dispatch({
+                        type: 'on_change_field',
+                        value: val,
+                        fieldID: id,
+                      })
+                    }
+                    changeOptionsCB={(opts, id) =>
+                      dispatch({
+                        type: 'change_option',
+                        options: opts,
+                        fieldID: id,
+                      })
+                    }
+                    removeFieldCB={(_) =>
+                      dispatch({
+                        type: 'remove_field',
+                        id: field.id,
+                      })
+                    }
                   />
                 );
 
               case 'multipleSelect':
                 return (
                   <InputOptionsEditor
+                    key={field.id}
                     field={field}
-                    onChangeFieldCB={onChangeField}
-                    changeOptionsCB={changeOptions}
-                    removeFieldCB={removeField}
+                    onChangeFieldCB={(val, id) =>
+                      dispatch({
+                        type: 'on_change_field',
+                        value: val,
+                        fieldID: id,
+                      })
+                    }
+                    changeOptionsCB={(opts, id) =>
+                      dispatch({
+                        type: 'change_option',
+                        options: opts,
+                        fieldID: id,
+                      })
+                    }
+                    removeFieldCB={(_) =>
+                      dispatch({
+                        type: 'remove_field',
+                        id: field.id,
+                      })
+                    }
                   />
                 );
             }
@@ -323,7 +473,7 @@ export function Form(props: { formID: number }) {
           <div className="flex w-full mt-2">
             <input
               onChange={(e) => {
-                setNewField(e.target.value);
+                setNewField({ type: 'change_text', value: e.target.value });
               }}
               value={newField}
               placeholder="Enter field name"
@@ -349,7 +499,14 @@ export function Form(props: { formID: number }) {
 
             <button
               className="ml-3 w-28 bg-blue-500 font-medium font-worksans rounded-lg px-4 py-2 my-2 text-white hover:bg-blue-700 smooth-effect"
-              onClick={addField}
+              onClick={(_) =>
+                dispatch({
+                  type: 'add_field',
+                  label: newField,
+                  kind: newFieldType,
+                  callback: () => setNewField({ type: 'clear_text' }),
+                })
+              }
             >
               Add Field
             </button>
@@ -357,7 +514,11 @@ export function Form(props: { formID: number }) {
 
           <button
             className="mr-3 w-28 bg-blue-500 font-medium font-worksans rounded-lg px-4 py-2 my-2 text-white hover:bg-blue-700 smooth-effect"
-            onClick={resetFields}
+            onClick={(_) =>
+              dispatch({
+                type: 'reset_fields',
+              })
+            }
           >
             Reset
           </button>

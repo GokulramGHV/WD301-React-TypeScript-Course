@@ -129,6 +129,7 @@ export default function Preview(props: { formID: number }) {
                 <textarea
                   className="w-full flex-1 border-2 border-gray-300 rounded-lg p-2 mt-1 mb-2 smooth-effect hover:border-blue-400 hover:ring-blue-400 focus:ring-blue-400 focus:border-blue-400"
                   name={currentField.label}
+                  value={currentField.value}
                   id={String(currentField.id)}
                   onChange={(e) => {
                     let value = e.target.value;
@@ -152,6 +153,7 @@ export default function Preview(props: { formID: number }) {
                         name={currentField.label}
                         className="flex-1 border-2 border-gray-300 rounded-full p-2 mt-1 mb-2 smooth-effect hover:border-blue-400 hover:ring-blue-400 focus:ring-blue-400 focus:border-blue-400"
                         value={opt}
+                        checked={currentField.value === opt}
                         onChange={(e) => {
                           let value = e.target.value;
                           onChangeField(value, currentField.id);
@@ -179,7 +181,9 @@ export default function Preview(props: { formID: number }) {
                   className="w-full flex-1 border-2 border-gray-300 rounded-lg p-2 mb-2 smooth-effect hover:border-blue-400 hover:ring-blue-400 focus:ring-blue-400 focus:border-blue-400"
                 >
                   <div className="float-left pl-2" id="Multi">
-                    --- Select options ---
+                    {currentField.value === ''
+                      ? '--- Select options ---'
+                      : currentField.value}
                   </div>
                   <div className="float-right text-gray-500 pr-2">
                     <i className="fa-solid fa-angle-down"></i>
@@ -197,6 +201,7 @@ export default function Preview(props: { formID: number }) {
                           id={`${opt}${index}`}
                           name={currentField.label}
                           value={opt}
+                          checked={currentField.value.split(', ').includes(opt)}
                           className="flex-1 border-2 border-gray-300 rounded-lg p-2 mt-1 mb-2 smooth-effect hover:border-blue-400 hover:ring-blue-400 focus:ring-blue-400 focus:border-blue-400"
                           onChange={(e) => {
                             let value = e.target.value;

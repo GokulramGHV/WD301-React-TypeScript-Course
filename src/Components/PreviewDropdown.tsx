@@ -23,7 +23,9 @@ export default function PreviewDropdown(props: {
           --- Select an option ---{' '}
         </option>
         {props.field.options.map((opt, index) => (
-          <option value={opt} key={index}>{opt}</option>
+          <option value={opt} key={index} selected={props.field.value === opt}>
+            {opt}
+          </option>
         ))}
       </select>
     </div>

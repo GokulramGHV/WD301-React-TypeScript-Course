@@ -17,7 +17,7 @@ export type formResponse = {
     responses: fieldResponse[];
 }
 
-export const listOfTypes = ['text', 'date', 'email', 'number', 'time']
+export const listOfTypes = ['text', 'date', 'email', 'number', 'time']  as const;
 export type textFieldTypes = typeof listOfTypes[number];
 
 export type textField = {
@@ -32,7 +32,7 @@ export type textAreaField = {
     id: number;
     kind: "textArea";
     label: string;
-    type: textFieldTypes;
+    type: 'text';
     value: string;
 }
 
@@ -40,7 +40,7 @@ export type dropDownField = {
     id: number;
     kind: "dropdown";
     label: string;
-    type: textFieldTypes;
+    type: 'text';
     options: string[];
     value: string;
 }
@@ -49,7 +49,7 @@ export type radioInputField = {
     id: number;
     kind: "radioInput";
     label: string;
-    type: textFieldTypes;
+    type: 'text';
     options: string[];
     value: string;
 }
@@ -58,7 +58,7 @@ export type multipleSelectField = {
     id: number;
     kind: "multipleSelect";
     label: string;
-    type: textFieldTypes;
+    type: 'text';
     options: string[];
     value: string;
 }
