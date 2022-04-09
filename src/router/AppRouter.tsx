@@ -4,9 +4,12 @@ import AppContainer from '../AppContainer';
 import About from '../Components/About';
 import { Form } from '../Components/Form';
 import { Home } from '../Components/Home';
+import Login from '../Components/Login';
 import Preview from '../Components/Preview';
+import { User } from '../types/userTypes';
 const routes = {
   '/': () => <Home />,
+  '/login': () => <Login />,
   '/about': () => <About />,
   '/forms/:id': ({ id }: { id: string }) => <Form formID={Number(id)} />,
   '/preview/:formId': ({ formId }: { formId: string }) => (
@@ -14,7 +17,7 @@ const routes = {
   ),
 };
 
-export default function AppRouter() {
+export default function AppRouter(props: {currentUser: User}) {
   let routeResult = useRoutes(routes);
-  return <AppContainer>{routeResult}</AppContainer>;
+  return <AppContainer currentUser={props.currentUser}>{routeResult}</AppContainer>;
 }

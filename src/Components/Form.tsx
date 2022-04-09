@@ -307,7 +307,6 @@ export function Form(props: { formID: number }) {
 
   return (
     <>
-      <Header />
       <div className="grid grid-cols-1 divide-y-2">
         <input
           onChange={(e) => {
