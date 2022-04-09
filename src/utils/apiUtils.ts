@@ -60,3 +60,11 @@ export const login = (username: string, password: string) => {
 export const me = () => {
   return request('users/me/', 'GET');
 };
+
+export const listForms = () => {
+  return request('forms/', 'GET');
+}
+
+export const listFormFields = (formId: number) => {
+  return request(`forms/${formId}/fields/`)
+}

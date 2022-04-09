@@ -3,24 +3,30 @@ import ListELem from './ListElem';
 import { initialFormFields, getLocalForms, saveLocalForms } from './Form';
 import { navigate, useQueryParams } from 'raviger';
 import Header from '../Header';
-import { formData } from '../types/formTypes';
+import { Form, formData } from '../types/formTypes';
 import Modal from './common/Modal';
 import CreateForm from './CreateForm';
+import { listForms } from '../utils/apiUtils';
+import { Pagination } from '../types/common';
 
-const fetchForms = async (setFormStateCB: (value: formData[]) => void) => {
+const fetchForms = async (setFormStateCB: (value: Form[]) => void) => {
   // fetch('https://tsapi.coronasafe.live/api/mock_test/').then((response) =>
   //   response.json().then((data) => setFormStateCB(data))
   // );
-
-  const response = await fetch('https://tsapi.coronasafe.live/api/mock_test/');
-  const jsonData = await response.json();
-  setFormStateCB(jsonData);
+  try {
+    const data: Pagination<Form> = await listForms();
+    setFormStateCB(data.results);
+  } catch (error) {
+    console.log(error);
+  }
+ 
+  
 };
 
 export function Home() {
   const [{ search }, setQuery] = useQueryParams();
   const [searchString, setSearchString] = useState('');
-  const [formsState, setFormsState] = useState(() => getLocalForms());
+  const [formsState, setFormsState] = useState<Form[]>([]);
   const [newForm, setNewForm] = useState(false);
 
   useEffect(() => {
@@ -31,19 +37,20 @@ export function Home() {
     fetchForms(setFormsState);
   }, []);
 
-  const addNewForm = () => {
-    const newForm: formData = {
-      id: Number(new Date()),
-      title: 'Untitled Form',
-      formFields: initialFormFields,
-    };
+  // const addNewForm = () => {
+  //   const newForm: formData = {
+  //     id: Number(new Date()),
+  //     title: 'Untitled Form',
+  //     formFields: initialFormFields,
+  //   };
 
-    saveLocalForms([...formsState, newForm]);
-    setFormsState(getLocalForms());
-  };
+  //   saveLocalForms([...formsState, newForm]);
+  //   setFormsState(getLocalForms());
+  // };
+
   const removeForm = (id: number) => {
-    saveLocalForms(formsState.filter((form) => form.id !== id));
-    setFormsState(getLocalForms());
+    // saveLocalForms(formsState.filter((form) => form.id !== id));
+    // setFormsState(getLocalForms());
   };
 
   return (
@@ -79,7 +86,7 @@ export function Home() {
             <ListELem
               formName={form.title}
               key={form.id}
-              id={form.id}
+              id={form.id as number}
               // openFormsCB={() => (window.location.href = `forms/${form.id}`)}
               removeFormsCB={removeForm}
             />

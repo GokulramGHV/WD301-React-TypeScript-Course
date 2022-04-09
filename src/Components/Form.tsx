@@ -28,6 +28,7 @@ export const getLocalForms: () => formData[] = () => {
   const savedFormsJSON = localStorage.getItem('savedForms');
   return savedFormsJSON ? JSON.parse(savedFormsJSON) : [];
 };
+
 const initialState: (id: number) => formData = (id: number) => {
   const localForms = getLocalForms();
   for (let i = 0; i < localForms.length; i++) {
@@ -291,6 +292,7 @@ export function Form(props: { formID: number }) {
       document.title = 'React App';
     };
   }, []);
+  
 
   useEffect(()=>{
     titleRef.current?.focus();
