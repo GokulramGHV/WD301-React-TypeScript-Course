@@ -52,7 +52,13 @@ type PrevQues = {
   formFields: FormField_api[];
 };
 
-type QuesNoActions = NextQues | PrevQues;
+type SetQues = {
+  type: 'set_ques';
+  number: number;
+  formFields: FormField_api[];
+};
+
+type QuesNoActions = NextQues | PrevQues | SetQues;
 
 const quesNoReducer = (quesNo: number, action: QuesNoActions) => {
   switch (action.type) {
@@ -61,6 +67,9 @@ const quesNoReducer = (quesNo: number, action: QuesNoActions) => {
     }
     case 'prev_ques': {
       return action.formFields[quesNo - 1] ? quesNo - 1 : quesNo;
+    }
+    case 'set_ques': {
+      return action.formFields[action.number] ? action.number : quesNo;
     }
   }
 };
@@ -99,8 +108,16 @@ const initialSubmission = async (
 };
 
 const submitAnswers = async (submission: Submission, formID: number) => {
+  let submit = submission.answers.length > 0;
+  submission.answers.forEach((ans) => {
+    if (ans.value === '') {
+      submit = false;
+    }
+  });
   try {
-    const data = await submitForm(formID, submission);
+    if (submit) {
+      const data = await submitForm(formID, submission);
+    }
   } catch (error) {
     console.log(error);
   }
@@ -113,7 +130,7 @@ export default function Preview(props: { formID: number }) {
     answers: [],
     form: { title: '' },
   });
-  const [onSubmit, setOnSubmit] = useState<boolean>(false);
+  // const [onSubmit, setOnSubmit] = useState<boolean>(false);
 
   useEffect(() => {
     fetchFormFields(dispatch, props.formID);
@@ -122,9 +139,13 @@ export default function Preview(props: { formID: number }) {
 
   useEffect(() => {
     submitAnswers(submission, props.formID);
-  }, [onSubmit]);
+  }, [submission]);
 
   let currentField = state[quesNo];
+
+  useEffect(() => {
+    currentField = state[quesNo];
+  }, [quesNo]);
 
   if (state.length > 0) {
     return (
@@ -339,24 +360,30 @@ export default function Preview(props: { formID: number }) {
               onClick={(_) => {
                 let alertText = '';
                 let FormAnswers: Answer[] = [];
-                state.forEach((field, i) => {
-                  FormAnswers.push({
-                    form_field: field.id as number,
-                    value: field.value as string,
-                  });
-
-                  alertText =
-                    alertText +
-                    `${i + 1}. ${field.label}\n` +
-                    `Ans: ${field.value}\n\n`;
-                });
-
+                for (let i = 0; i < state.length; i++) {
+                  if (state[i].value !== '') {
+                    FormAnswers.push({
+                      form_field: state[i].id as number,
+                      value: state[i].value as string,
+                    });
+                    alertText =
+                      alertText +
+                      `${i + 1}. ${state[i].label}\n` +
+                      `Ans: ${state[i].value}\n\n`;
+                  } else {
+                    dispatchQuesNo({
+                      type: 'set_ques',
+                      number: i,
+                      formFields: state,
+                    });
+                    alert('All the fields must be filled!');
+                    return;
+                  }
+                }
                 setSubmission((sub) => {
                   return { ...sub, answers: FormAnswers };
                 });
-                setOnSubmit(onSubmit ? false : true);
                 alert(alertText + 'Thanks for responding!');
-                // submitAnswers(submission, props.formID);
               }}
               className="float-right w-28 shadow-md bg-blue-500 font-medium font-worksans rounded-lg px-2 py-2 my-2 text-white hover:bg-blue-700 smooth-effect"
             >
