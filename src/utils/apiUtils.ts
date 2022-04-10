@@ -1,4 +1,4 @@
-import { FormField_api } from '../types/common';
+import { FormField_api, Submission } from '../types/common';
 import { Form } from '../types/formTypes';
 
 const API_BASE_URL = 'https://tsapi.coronasafe.live/api/';
@@ -26,7 +26,7 @@ export const request = async (
   }
 
   // Basic Authentication
-  // const auth = 'Basic ' + window.btoa('GokulGHV:abcd@123'); // 'gigin:7zQ7efBJRHCWVyu'
+  // const auth = 'Basic ' + window.btoa('GokulGHV:abcd@123');
 
   // Token Authentication
   const token = localStorage.getItem('token');
@@ -62,30 +62,56 @@ export const me = () => {
   return request('users/me/', 'GET');
 };
 
+export const register = (
+  username: string,
+  email: string,
+  password1: string,
+  password2: string
+) => {
+  return request('auth/registration/', 'POST', {
+    username,
+    email,
+    password1,
+    password2,
+  });
+};
+
 export const listForms = () => {
   return request('forms/', 'GET');
-}
+};
 
 export const listFormFields = (formId: number) => {
-  return request(`forms/${formId}/fields/`, 'GET')
-}
+  return request(`forms/${formId}/fields/`, 'GET');
+};
 
 export const getFormDetails = (formId: number) => {
-  return request(`forms/${formId}/`, 'GET')
-}
+  return request(`forms/${formId}/`, 'GET');
+};
 
-export const updateForm = (formId: number, data:any) => {
-  return request(`forms/${formId}/`, 'PUT', data)
-}
+export const updateForm = (formId: number, data: any) => {
+  return request(`forms/${formId}/`, 'PUT', data);
+};
+
+export const deleteForm = (formId: number) => {
+  return request(`forms/${formId}/`, 'DELETE');
+};
+
+export const submitForm = (formId: number, data: Submission) => {
+  return request(`forms/${formId}/submission/`, 'POST', data);
+};
 
 export const addNewFormField = (formId: number, field: FormField_api) => {
-  return request(`forms/${formId}/fields/`, 'POST', field)
-}
+  return request(`forms/${formId}/fields/`, 'POST', field);
+};
 
 export const removeFormField = (formId: number, fieldId: number) => {
-  return request(`forms/${formId}/fields/${fieldId}`, 'DELETE')
-}
+  return request(`forms/${formId}/fields/${fieldId}`, 'DELETE');
+};
 
-export const updateFormField = (formId: number, fieldId: number, field: FormField_api) => {
-  return request(`forms/${formId}/fields/${fieldId}`, 'PUT', field)
-}
+export const updateFormField = (
+  formId: number,
+  fieldId: number,
+  field: FormField_api
+) => {
+  return request(`forms/${formId}/fields/${fieldId}`, 'PUT', field);
+};

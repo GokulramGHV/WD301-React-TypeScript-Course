@@ -1,6 +1,6 @@
 import { navigate } from 'raviger';
 import React, { useEffect, useState } from 'react';
-import Header from '../Header';
+// import Header from '../Header';
 import { login } from '../utils/apiUtils';
 
 export default function Login() {
@@ -47,7 +47,7 @@ export default function Login() {
           </div>
 
           <div className="mb-4">
-            <label htmlFor="username">Password</label>
+            <label htmlFor="password">Password</label>
             <input
               className="flex-1 border-2 w-full border-gray-300 rounded-lg p-2 mt-1 smooth-effect hover:border-blue-400 hover:ring-blue-400 focus:ring-blue-400 focus:border-blue-400"
               type="password"

@@ -4,18 +4,8 @@ import React, { useState, useEffect, useRef, useReducer } from 'react';
 
 import { FormFieldTypes_api, FormField_api } from '../types/common';
 import UserInput from './UserInput';
-import {
-  dropDownField,
-  formData,
-  formField,
-  multipleSelectField,
-  radioInputField,
-  textAreaField,
-  textField,
-  textFieldTypes,
-} from '../types/formTypes';
 import { InputOptionsEditor } from './OptionsEditor';
-import TextAreaInput from './TextAreaInput';
+// import TextAreaInput from './TextAreaInput';
 import {
   addNewFormField,
   getFormDetails,
@@ -24,45 +14,6 @@ import {
   updateForm,
   updateFormField,
 } from '../utils/apiUtils';
-
-export const initialFormFields: formField[] = [
-  { id: 1, kind: 'text', label: 'First Name', type: 'text', value: '' },
-  { id: 2, kind: 'text', label: 'Last Name', type: 'text', value: '' },
-  { id: 3, kind: 'text', label: 'Email', type: 'email', value: '' },
-  { id: 4, kind: 'text', label: 'Date of Birth', type: 'date', value: '' },
-  { id: 5, kind: 'text', label: 'Phone Number', type: 'number', value: '' },
-];
-
-export const getLocalForms: () => formData[] = () => {
-  const savedFormsJSON = localStorage.getItem('savedForms');
-  return savedFormsJSON ? JSON.parse(savedFormsJSON) : [];
-};
-
-const initialState: (id: number) => formData = (id: number) => {
-  const localForms = getLocalForms();
-  for (let i = 0; i < localForms.length; i++) {
-    if (localForms[i].id === id) return localForms[i];
-  }
-  const newForm = {
-    id: Number(new Date()),
-    title: 'Untitled Form',
-    formFields: initialFormFields,
-  };
-  saveLocalForms([...localForms, newForm]);
-  return newForm;
-};
-
-export const saveLocalForms = (localForm: formData[]) => {
-  localStorage.setItem('savedForms', JSON.stringify(localForm));
-};
-
-const saveFormData = (currentState: formData) => {
-  const localForms = getLocalForms();
-  const updatedLocalForms = localForms.map((form) =>
-    form.id === currentState.id ? currentState : form
-  );
-  saveLocalForms(updatedLocalForms);
-};
 
 type AddAction = {
   type: 'add_field';
@@ -361,7 +312,9 @@ const SaveFormData = async (
 
       // arrayCompare(fieldToCheck[0].options, state[i].options as string[]);
 
-      if (!arrayCompare(fieldToCheck[0].options, state[i].options as string[])) {
+      if (
+        !arrayCompare(fieldToCheck[0].options, state[i].options as string[])
+      ) {
         // Change Field Options Request
         try {
           const data = await updateFormField(formID, state[i].id as number, {
@@ -550,62 +503,6 @@ export function Form(props: { formID: number }) {
             //       }
             //     />
             //   );
-
-            // case 'radioInput':
-            //   return (
-            //     <InputOptionsEditor
-            //       key={field.id}
-            //       field={field}
-            //       onChangeFieldCB={(val, id) =>
-            //         dispatch({
-            //           type: 'on_change_field',
-            //           value: val,
-            //           fieldID: id,
-            //         })
-            //       }
-            //       changeOptionsCB={(opts, id) =>
-            //         dispatch({
-            //           type: 'change_option',
-            //           options: opts,
-            //           fieldID: id,
-            //         })
-            //       }
-            //       removeFieldCB={(_) =>
-            //         dispatch({
-            //           type: 'remove_field',
-            //           id: field.id,
-            //         })
-            //       }
-            //     />
-            //   );
-
-            // case 'multipleSelect':
-            //   return (
-            //     <InputOptionsEditor
-            //       key={field.id}
-            //       field={field}
-            //       onChangeFieldCB={(val, id) =>
-            //         dispatch({
-            //           type: 'on_change_field',
-            //           value: val,
-            //           fieldID: id,
-            //         })
-            //       }
-            //       changeOptionsCB={(opts, id) =>
-            //         dispatch({
-            //           type: 'change_option',
-            //           options: opts,
-            //           fieldID: id,
-            //         })
-            //       }
-            //       removeFieldCB={(_) =>
-            //         dispatch({
-            //           type: 'remove_field',
-            //           id: field.id,
-            //         })
-            //       }
-            //     />
-            //   );
           })}
         </div>
 
@@ -640,18 +537,6 @@ export function Form(props: { formID: number }) {
             <button
               className="ml-3 w-28 bg-blue-500 font-medium font-worksans rounded-lg px-4 py-2 my-2 text-white hover:bg-blue-700 smooth-effect"
               onClick={(_) => {
-                // addFormField(setNewState, props.formID, newField, newFieldType);
-                // setNewState((state: FormField_api[]) => [
-                //   ...state,
-                //   {
-                //     id: Number(new Date()),
-                //     kind: newFieldType,
-                //     label: newField,
-                //     value: '',
-                //   },
-                // ]);
-                // setNewField({ type: 'change_text', value: '' });
-
                 dispatch({
                   type: 'add_field',
                   label: newField,
@@ -666,13 +551,11 @@ export function Form(props: { formID: number }) {
 
           <button
             className="mr-3 w-28 bg-blue-500 font-medium font-worksans rounded-lg px-4 py-2 my-2 text-white hover:bg-blue-700 smooth-effect"
-            // onClick={(_) =>
-            //   dispatch({
-            //     type: 'reset_fields',
-            //   })
-            // }
+            onClick={(_) => {
+              fetchFormFields(dispatch, props.formID);
+            }}
           >
-            Reset
+            Refresh
           </button>
 
           <button

@@ -1,12 +1,12 @@
 import React, { useEffect, useState } from 'react';
 import ListELem from './ListElem';
-import { initialFormFields, getLocalForms, saveLocalForms } from './Form';
+// import { initialFormFields, getLocalForms, saveLocalForms } from './Form';
 import { navigate, useQueryParams } from 'raviger';
 import Header from '../Header';
 import { Form, formData } from '../types/formTypes';
 import Modal from './common/Modal';
 import CreateForm from './CreateForm';
-import { listForms } from '../utils/apiUtils';
+import { deleteForm, listForms } from '../utils/apiUtils';
 import { Pagination } from '../types/common';
 
 const fetchForms = async (setFormStateCB: (value: Form[]) => void) => {
@@ -19,9 +19,18 @@ const fetchForms = async (setFormStateCB: (value: Form[]) => void) => {
   } catch (error) {
     console.log(error);
   }
- 
-  
 };
+
+// const removeForm = async (setFormStateCB: any, formId: number) => {
+//   try {
+//     setFormStateCB((formsState: Form[]) =>
+//       formsState.filter((form: Form) => form.id !== formId)
+//     );
+//     const data = await deleteForm(formId);
+//   } catch (error) {
+//     console.log(error);
+//   }
+// };
 
 export function Home() {
   const [{ search }, setQuery] = useQueryParams();
@@ -47,11 +56,6 @@ export function Home() {
   //   saveLocalForms([...formsState, newForm]);
   //   setFormsState(getLocalForms());
   // };
-
-  const removeForm = (id: number) => {
-    // saveLocalForms(formsState.filter((form) => form.id !== id));
-    // setFormsState(getLocalForms());
-  };
 
   return (
     <>
@@ -88,7 +92,9 @@ export function Home() {
               key={form.id}
               id={form.id as number}
               // openFormsCB={() => (window.location.href = `forms/${form.id}`)}
-              removeFormsCB={removeForm}
+              removeFormsCB={(id) => {
+                // removeForm(setFormsState, form.id as number);
+              }}
             />
           ))}
       </div>

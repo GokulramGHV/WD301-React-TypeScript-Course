@@ -12,13 +12,27 @@ export default function Header(props: { currentUser: User }) {
         alt="logo"
         style={{ animation: 'spin 2s linear infinite' }}
       />
-      <ActiveLink
-        className="text-center text-xl mr-1 font-worksans rounded-full px-4 py-2 hover:bg-slate-200 smooth-effect"
-        href="/"
-        exactActiveClass="text-blue-500"
-      >
-        Home
-      </ActiveLink>
+
+      {props.currentUser?.username?.length > 0 && (
+        <ActiveLink
+          className="text-center text-xl mr-1 font-worksans rounded-full px-4 py-2 hover:bg-slate-200 smooth-effect"
+          href="/"
+          exactActiveClass="text-blue-500"
+        >
+          Home
+        </ActiveLink>
+      )}
+
+      {props.currentUser?.username?.length === 0 && (
+        <ActiveLink
+          className="text-center text-xl mr-1 font-worksans rounded-full px-4 py-2 hover:bg-slate-200 smooth-effect"
+          href="/"
+          exactActiveClass="text-blue-500"
+        >
+          Register
+        </ActiveLink>
+      )}
+
       <ActiveLink
         className="text-center text-xl mr-1 font-worksans rounded-full px-4 py-2 hover:bg-slate-200 smooth-effect"
         href="/about"
@@ -46,8 +60,6 @@ export default function Header(props: { currentUser: User }) {
           Login
         </ActiveLink>
       )}
-
-      <div></div>
     </div>
   );
 }

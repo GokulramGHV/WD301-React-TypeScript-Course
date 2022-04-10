@@ -1,29 +1,17 @@
 import { Link } from 'raviger';
 import React, { useEffect, useReducer, useState } from 'react';
-import { getLocalForms } from './Form';
+// import { getLocalForms, initialFormFields } from './Form';
 import PreviewInput from './PreviewInput';
 import {
   formResponse,
   fieldResponse,
   formData,
   formField,
+  Form,
 } from '../types/formTypes';
 import PreviewDropdown from './PreviewDropdown';
-import { FormField_api } from '../types/common';
-import { listFormFields } from '../utils/apiUtils';
-
-// const initialState: (id: number) => formData = (id: number) => {
-//   const localForms = getLocalForms();
-//   for (let i = 0; i < localForms.length; i++) {
-//     if (localForms[i].id === id) return localForms[i];
-//   }
-//   const newForm = {
-//     id: Number(new Date()),
-//     title: 'Untitled Form',
-//     formFields: [],
-//   };
-//   return newForm;
-// };
+import { Answer, FormField_api, Submission } from '../types/common';
+import { getFormDetails, listFormFields, submitForm } from '../utils/apiUtils';
 
 type OnChangeFieldAction = {
   // when the value of the field is changed this action is invoked
@@ -84,7 +72,35 @@ const fetchFormFields = async (
   try {
     const data: any = await listFormFields(formID);
     // if (data.is_public)
-      dispatchCB({ type: 'set_fields', fields: data.results });
+    dispatchCB({ type: 'set_fields', fields: data.results });
+  } catch (error) {
+    console.log(error);
+  }
+};
+
+const initialSubmission = async (
+  setSubmissionCB: React.Dispatch<React.SetStateAction<Submission>>,
+  formId: number
+) => {
+  try {
+    const data: any = await listFormFields(formId);
+    let idArray: number[] = data.results.map((val: FormField_api) => {
+      return val.id as number;
+    });
+    let answers: Answer[] = idArray.map((fid) => {
+      return { form_field: fid, value: '' };
+    });
+    const formDetail: Form = await getFormDetails(formId);
+
+    setSubmissionCB({ answers: answers, form: formDetail });
+  } catch (error) {
+    console.log(error);
+  }
+};
+
+const submitAnswers = async (submission: Submission, formID: number) => {
+  try {
+    const data = await submitForm(formID, submission);
   } catch (error) {
     console.log(error);
   }
@@ -93,15 +109,19 @@ const fetchFormFields = async (
 export default function Preview(props: { formID: number }) {
   const [state, dispatch] = useReducer(stateReducer, []);
   const [quesNo, dispatchQuesNo] = useReducer(quesNoReducer, 0);
-  // const [answers, setAnswers] = useState<formResponse>({
-  //   id: Number(new Date()),
-  //   formName: state.title,
-  //   responses: [],
-  // });
+  const [submission, setSubmission] = useState<Submission>({
+    answers: [],
+    form: { title: '' },
+  });
 
   useEffect(() => {
     fetchFormFields(dispatch, props.formID);
+    initialSubmission(setSubmission, props.formID);
   }, []);
+
+  useEffect(() => {
+    submitAnswers(submission, props.formID);
+  }, [submission]);
 
   let currentField = state[quesNo];
 
@@ -115,7 +135,10 @@ export default function Preview(props: { formID: number }) {
           <i className="fa-solid fa-circle-xmark"></i>
         </Link>
         <div className="text-3xl font-semibold mb-2">
-          {/*state.title*/}Untitled Form
+          {submission.form.title}
+        </div>
+        <div className="text-gray-500 mb-1">
+          Description: {submission.form.description}
         </div>
         <div className="text-gray-400 mb-4">
           Question {quesNo + 1} of {state.length}{' '}
@@ -314,13 +337,12 @@ export default function Preview(props: { formID: number }) {
             <button
               onClick={(_) => {
                 let alertText = '';
-                let FormRespones: fieldResponse[] = [];
+                let FormAnswers: Answer[] = [];
                 state.forEach((field, i) => {
-                  // FormRespones.push({
-                  //   id: field.id,
-                  //   question: field.label,
-                  //   answer: field.value,
-                  // });
+                  FormAnswers.push({
+                    form_field: field.id as number,
+                    value: field.value as string,
+                  });
 
                   alertText =
                     alertText +
@@ -328,9 +350,9 @@ export default function Preview(props: { formID: number }) {
                     `Ans: ${field.value}\n\n`;
                 });
 
-                // setAnswers((ans) => {
-                //   return { ...ans, responses: FormRespones };
-                // });
+                setSubmission((sub) => {
+                  return { ...sub, answers: FormAnswers };
+                });
 
                 alert(alertText + 'Thanks for responding!');
               }}
