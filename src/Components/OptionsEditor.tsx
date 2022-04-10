@@ -1,4 +1,5 @@
 import React, { useState, useEffect, useRef } from 'react';
+import { FormField_api } from '../types/common';
 import {
   dropDownField,
   multipleSelectField,
@@ -27,7 +28,7 @@ export function OptionsEditor(props: {
         temp.push({ opId: i + 1, opName: optionsState[i].opName });
       }
       temp.push({ opId: temp.length + 1, opName: optionName });
-      console.log(temp);
+      // console.log(temp);
       setOptionsState((state) => temp);
     }
     setOptionName('');
@@ -119,7 +120,7 @@ export function OptionsEditor(props: {
 }
 
 export function InputOptionsEditor(props: {
-  field: dropDownField | radioInputField | multipleSelectField;
+  field: FormField_api;
   onChangeFieldCB: (val: string, id: number) => void;
   removeFieldCB: (id: number) => void;
   changeOptionsCB: (options: string[], fieldId: number) => void;
@@ -133,7 +134,7 @@ export function InputOptionsEditor(props: {
           title={props.field.kind}
           onChange={(e) => {
             let value = e.target.value;
-            props.onChangeFieldCB(value, props.field.id);
+            props.onChangeFieldCB(value, props.field.id as number);
           }}
           className="flex-1 border-2 border-gray-300 rounded-lg p-2 mt-1 mb-2 smooth-effect hover:border-blue-400 hover:ring-blue-400 focus:ring-blue-400 focus:border-blue-400"
         />
@@ -150,18 +151,18 @@ export function InputOptionsEditor(props: {
         </button>
         <button
           className="ml-3 w-28 bg-blue-500 font-medium font-worksans rounded-lg px-2 py-2 my-2 text-white hover:bg-blue-700 smooth-effect"
-          onClick={(_) => props.removeFieldCB(props.field.id)}
+          onClick={(_) => props.removeFieldCB(props.field.id as number)}
         >
           Remove
         </button>
       </div>
       <div className={`collapse`} id={`collapse${props.field.id}`}>
         <OptionsEditor
-          fieldID={props.field.id}
+          fieldID={props.field.id as number}
           fieldKind={props.field.kind}
           key={props.field.id}
           fieldLabel={props.field.label}
-          fieldOptions={props.field.options}
+          fieldOptions={props.field.options as string[]}
           changeOptionsCB={props.changeOptionsCB}
         />
       </div>

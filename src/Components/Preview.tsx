@@ -9,21 +9,21 @@ import {
   formField,
 } from '../types/formTypes';
 import PreviewDropdown from './PreviewDropdown';
+import { FormField_api } from '../types/common';
+import { listFormFields } from '../utils/apiUtils';
 
-const initialState: (id: number) => formData = (id: number) => {
-  const localForms = getLocalForms();
-  for (let i = 0; i < localForms.length; i++) {
-    if (localForms[i].id === id) return localForms[i];
-  }
-  const newForm = {
-    id: Number(new Date()),
-    title: 'Untitled Form',
-    formFields: [],
-  };
-  return newForm;
-};
-
-
+// const initialState: (id: number) => formData = (id: number) => {
+//   const localForms = getLocalForms();
+//   for (let i = 0; i < localForms.length; i++) {
+//     if (localForms[i].id === id) return localForms[i];
+//   }
+//   const newForm = {
+//     id: Number(new Date()),
+//     title: 'Untitled Form',
+//     formFields: [],
+//   };
+//   return newForm;
+// };
 
 type OnChangeFieldAction = {
   // when the value of the field is changed this action is invoked
@@ -32,63 +32,80 @@ type OnChangeFieldAction = {
   fieldID: number;
 };
 
+type SetFieldsAction = {
+  type: 'set_fields';
+  fields: FormField_api[];
+};
+
 // Action Reducer
-type FormActions = OnChangeFieldAction;
-const stateReducer = (state: formData, action: FormActions) => {
+type FormActions = OnChangeFieldAction | SetFieldsAction;
+const stateReducer = (state: FormField_api[], action: FormActions) => {
   switch (action.type) {
     case 'on_change_field': {
-      return {
-        ...state,
-        formFields: state.formFields.map((s) => {
-          if (s.id === action.fieldID) return { ...s, value: action.value };
-          return s;
-        }),
-      };
+      return state.map((s) => {
+        if (s.id === action.fieldID) return { ...s, value: action.value };
+        return s;
+      });
+    }
+
+    case 'set_fields': {
+      return action.fields;
     }
   }
 };
 
 type NextQues = {
-  type: 'next_ques',
-  formFields: formField[]
-}
+  type: 'next_ques';
+  formFields: FormField_api[];
+};
 
 type PrevQues = {
-  type: 'prev_ques',
-  formFields: formField[]
-}
+  type: 'prev_ques';
+  formFields: FormField_api[];
+};
 
 type QuesNoActions = NextQues | PrevQues;
 
 const quesNoReducer = (quesNo: number, action: QuesNoActions) => {
-  switch(action.type) {
+  switch (action.type) {
     case 'next_ques': {
-      return (action.formFields[quesNo + 1] ? quesNo + 1 : quesNo)
+      return action.formFields[quesNo + 1] ? quesNo + 1 : quesNo;
     }
     case 'prev_ques': {
-      return (action.formFields[quesNo - 1] ? quesNo - 1 : quesNo)
+      return action.formFields[quesNo - 1] ? quesNo - 1 : quesNo;
     }
   }
 };
 
+const fetchFormFields = async (
+  dispatchCB: React.Dispatch<FormActions>,
+  formID: number
+) => {
+  try {
+    const data: any = await listFormFields(formID);
+    // if (data.is_public)
+      dispatchCB({ type: 'set_fields', fields: data.results });
+  } catch (error) {
+    console.log(error);
+  }
+};
+
 export default function Preview(props: { formID: number }) {
-  const [state, dispatch] = useReducer(stateReducer, null, () =>
-    initialState(props.formID)
-  );
-  const [quesNo, dispatchQuesNo] = useReducer(quesNoReducer,0);
-  const [answers, setAnswers] = useState<formResponse>({
-    id: Number(new Date()),
-    formName: state.title,
-    responses: [],
-  });
+  const [state, dispatch] = useReducer(stateReducer, []);
+  const [quesNo, dispatchQuesNo] = useReducer(quesNoReducer, 0);
+  // const [answers, setAnswers] = useState<formResponse>({
+  //   id: Number(new Date()),
+  //   formName: state.title,
+  //   responses: [],
+  // });
 
   useEffect(() => {
-    console.log(answers);
-  }, [answers]);
+    fetchFormFields(dispatch, props.formID);
+  }, []);
 
-  let currentField = state.formFields[quesNo];
+  let currentField = state[quesNo];
 
-  if (state.formFields.length > 0) {
+  if (state.length > 0) {
     return (
       <div className="p-2">
         <Link
@@ -97,19 +114,21 @@ export default function Preview(props: { formID: number }) {
         >
           <i className="fa-solid fa-circle-xmark"></i>
         </Link>
-        <div className="text-3xl font-semibold mb-2">{state.title}</div>
+        <div className="text-3xl font-semibold mb-2">
+          {/*state.title*/}Untitled Form
+        </div>
         <div className="text-gray-400 mb-4">
-          Question {quesNo + 1} of {state.formFields.length}{' '}
+          Question {quesNo + 1} of {state.length}{' '}
         </div>
 
-        {((currentField: formField) => {
-          if (currentField.kind === 'text')
+        {((currentField: FormField_api) => {
+          if (currentField.kind === 'TEXT')
             return (
               <PreviewInput
-                id={currentField.id}
+                id={currentField.id as number}
                 label={currentField.label}
-                type={currentField.type}
-                value={currentField.value}
+                type={currentField.options ? currentField.options[0] : 'text'}
+                value={currentField.value as string}
                 onChangeCB={(val, id) =>
                   dispatch({
                     type: 'on_change_field',
@@ -119,7 +138,7 @@ export default function Preview(props: { formID: number }) {
                 }
               />
             );
-          else if (currentField.kind === 'dropdown')
+          else if (currentField.kind === 'DROPDOWN')
             return (
               <PreviewDropdown
                 field={currentField}
@@ -132,36 +151,36 @@ export default function Preview(props: { formID: number }) {
                 }
               />
             );
-          else if (currentField.kind === 'textArea')
-            return (
-              <div>
-                <div className="text-2xl mb-1">
-                  <label>{currentField.label}</label>
-                </div>
-                <textarea
-                  className="w-full flex-1 border-2 border-gray-300 rounded-lg p-2 mt-1 mb-2 smooth-effect hover:border-blue-400 hover:ring-blue-400 focus:ring-blue-400 focus:border-blue-400"
-                  name={currentField.label}
-                  value={currentField.value}
-                  id={String(currentField.id)}
-                  onChange={(e) => {
-                    let value = e.target.value;
-                    dispatch({
-                      type: 'on_change_field',
-                      value: value,
-                      fieldID: currentField.id,
-                    });
-                  }}
-                ></textarea>
-              </div>
-            );
-          else if (currentField.kind === 'radioInput')
+          // else if (currentField.kind === 'textArea')
+          //   return (
+          //     <div>
+          //       <div className="text-2xl mb-1">
+          //         <label>{currentField.label}</label>
+          //       </div>
+          //       <textarea
+          //         className="w-full flex-1 border-2 border-gray-300 rounded-lg p-2 mt-1 mb-2 smooth-effect hover:border-blue-400 hover:ring-blue-400 focus:ring-blue-400 focus:border-blue-400"
+          //         name={currentField.label}
+          //         value={currentField.value}
+          //         id={String(currentField.id)}
+          //         onChange={(e) => {
+          //           let value = e.target.value;
+          //           dispatch({
+          //             type: 'on_change_field',
+          //             value: value,
+          //             fieldID: currentField.id,
+          //           });
+          //         }}
+          //       ></textarea>
+          //     </div>
+          //   );
+          else if (currentField.kind === 'RADIO')
             return (
               <div>
                 <div className="text-2xl mb-4">
                   <label>{currentField.label}</label>
                 </div>
                 <div className="flex gap-5 flex-wrap">
-                  {currentField.options.map((opt, index) => (
+                  {currentField.options?.map((opt, index) => (
                     <div key={index}>
                       <input
                         type="radio"
@@ -175,7 +194,7 @@ export default function Preview(props: { formID: number }) {
                           dispatch({
                             type: 'on_change_field',
                             value: value,
-                            fieldID: currentField.id,
+                            fieldID: currentField.id as number,
                           });
                         }}
                       />
@@ -187,7 +206,7 @@ export default function Preview(props: { formID: number }) {
                 </div>
               </div>
             );
-          else if (currentField.kind === 'multipleSelect')
+          else if (currentField.kind === 'GENERIC')
             return (
               <div>
                 <div className="text-2xl mb-2">
@@ -213,7 +232,8 @@ export default function Preview(props: { formID: number }) {
                   className="flex gap-5 flex-col collapse bg-gray-100 rounded-lg p-5"
                   id={`collapse${currentField.id}`}
                 >
-                  {currentField.options.length > 0 &&
+                  {currentField.options &&
+                    currentField.options.length > 0 &&
                     currentField.options.map((opt, index) => (
                       <div key={index}>
                         <input
@@ -221,7 +241,9 @@ export default function Preview(props: { formID: number }) {
                           id={`${opt}${index}`}
                           name={currentField.label}
                           value={opt}
-                          checked={currentField.value.split(', ').includes(opt)}
+                          checked={currentField.value
+                            ?.split(', ')
+                            .includes(opt)}
                           className="flex-1 border-2 border-gray-300 rounded-lg p-2 mt-1 mb-2 smooth-effect hover:border-blue-400 hover:ring-blue-400 focus:ring-blue-400 focus:border-blue-400"
                           onChange={(e) => {
                             let value = e.target.value;
@@ -244,7 +266,7 @@ export default function Preview(props: { formID: number }) {
                               dispatch({
                                 type: 'on_change_field',
                                 value: elem.innerHTML,
-                                fieldID: currentField.id,
+                                fieldID: currentField.id as number,
                               });
                             }
                           }}
@@ -260,41 +282,45 @@ export default function Preview(props: { formID: number }) {
         })(currentField)}
 
         <div className="mt-3">
-          {state.formFields[quesNo - 1] && (
+          {state[quesNo - 1] && (
             <button
-              onClick={(_) => dispatchQuesNo({
-                type:'prev_ques',
-                formFields:state.formFields
-              })}
+              onClick={(_) =>
+                dispatchQuesNo({
+                  type: 'prev_ques',
+                  formFields: state,
+                })
+              }
               className="mr-3 shadow-lg w-10 bg-blue-500 font-medium font-worksans rounded-full px-2 py-2 my-2 text-white hover:bg-blue-700 smooth-effect"
             >
               <i className="fas fa-arrow-left"></i>
             </button>
           )}
 
-          {state.formFields[quesNo + 1] && (
+          {state[quesNo + 1] && (
             <button
-              onClick={(_) => dispatchQuesNo({
-                type:'next_ques',
-                formFields:state.formFields
-              })}
+              onClick={(_) =>
+                dispatchQuesNo({
+                  type: 'next_ques',
+                  formFields: state,
+                })
+              }
               className="mr-3 shadow-lg w-10 bg-blue-500 font-medium font-worksans rounded-full px-2 py-2 my-2 text-white hover:bg-blue-700 smooth-effect"
             >
               <i className="fas fa-arrow-right"></i>
             </button>
           )}
 
-          {!state.formFields[quesNo + 1] && (
+          {!state[quesNo + 1] && (
             <button
               onClick={(_) => {
                 let alertText = '';
                 let FormRespones: fieldResponse[] = [];
-                state.formFields.forEach((field, i) => {
-                  FormRespones.push({
-                    id: field.id,
-                    question: field.label,
-                    answer: field.value,
-                  });
+                state.forEach((field, i) => {
+                  // FormRespones.push({
+                  //   id: field.id,
+                  //   question: field.label,
+                  //   answer: field.value,
+                  // });
 
                   alertText =
                     alertText +
@@ -302,9 +328,9 @@ export default function Preview(props: { formID: number }) {
                     `Ans: ${field.value}\n\n`;
                 });
 
-                setAnswers((ans) => {
-                  return { ...ans, responses: FormRespones };
-                });
+                // setAnswers((ans) => {
+                //   return { ...ans, responses: FormRespones };
+                // });
 
                 alert(alertText + 'Thanks for responding!');
               }}

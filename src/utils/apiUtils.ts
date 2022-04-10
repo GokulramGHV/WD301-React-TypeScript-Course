@@ -1,3 +1,4 @@
+import { FormField_api } from '../types/common';
 import { Form } from '../types/formTypes';
 
 const API_BASE_URL = 'https://tsapi.coronasafe.live/api/';
@@ -66,5 +67,25 @@ export const listForms = () => {
 }
 
 export const listFormFields = (formId: number) => {
-  return request(`forms/${formId}/fields/`)
+  return request(`forms/${formId}/fields/`, 'GET')
+}
+
+export const getFormDetails = (formId: number) => {
+  return request(`forms/${formId}/`, 'GET')
+}
+
+export const updateForm = (formId: number, data:any) => {
+  return request(`forms/${formId}/`, 'PUT', data)
+}
+
+export const addNewFormField = (formId: number, field: FormField_api) => {
+  return request(`forms/${formId}/fields/`, 'POST', field)
+}
+
+export const removeFormField = (formId: number, fieldId: number) => {
+  return request(`forms/${formId}/fields/${fieldId}`, 'DELETE')
+}
+
+export const updateFormField = (formId: number, fieldId: number, field: FormField_api) => {
+  return request(`forms/${formId}/fields/${fieldId}`, 'PUT', field)
 }
