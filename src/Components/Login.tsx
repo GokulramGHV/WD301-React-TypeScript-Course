@@ -1,11 +1,14 @@
 import { navigate } from 'raviger';
 import React, { useEffect, useState } from 'react';
+import { Errors } from '../types/formTypes';
 // import Header from '../Header';
 import { login } from '../utils/apiUtils';
 
 export default function Login() {
   const [username, setUsername] = useState('');
   const [password, setPassword] = useState('');
+
+  // const [errors, setErrors] = useState('');
 
   const handleSubmit = async (event: React.FormEvent<HTMLFormElement>) => {
     event.preventDefault();
@@ -14,7 +17,8 @@ export default function Login() {
       localStorage.setItem('token', data.token);
       window.location.reload();
       navigate('/');
-    } catch (error) {
+    } catch (error: any) {
+      // setErrors(error.non_field_errors);
       console.log(error);
     }
   };
@@ -60,6 +64,8 @@ export default function Login() {
               required
             />
           </div>
+
+          {/* <p className="text-red-500 my-2">{errors}</p> */}
 
           <button
             className="mt-3 w-full bg-blue-500 font-medium font-worksans rounded-lg px-4 py-2 text-white hover:bg-blue-700 smooth-effect"

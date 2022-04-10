@@ -35,7 +35,7 @@ export default function CreateForm() {
 
   return (
     <div className="w-full divide-y divide-gray-200">
-      <h1 className="text-xl text-slate-700 my-2">Create Form</h1>
+      <h1 className="text-xl text-slate-700 my-2 font-semibold">Create Form</h1>
       <form className="py-4" onSubmit={handleSubmit}>
         <div className="mb-4">
           <label

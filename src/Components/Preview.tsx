@@ -71,8 +71,8 @@ const fetchFormFields = async (
 ) => {
   try {
     const data: any = await listFormFields(formID);
-    if (data.is_public)
-      dispatchCB({ type: 'set_fields', fields: data.results });
+    // if (data.is_public)
+    dispatchCB({ type: 'set_fields', fields: data.results });
   } catch (error) {
     console.log(error);
   }
@@ -113,6 +113,7 @@ export default function Preview(props: { formID: number }) {
     answers: [],
     form: { title: '' },
   });
+  const [onSubmit, setOnSubmit] = useState<boolean>(false);
 
   useEffect(() => {
     fetchFormFields(dispatch, props.formID);
@@ -121,7 +122,7 @@ export default function Preview(props: { formID: number }) {
 
   useEffect(() => {
     submitAnswers(submission, props.formID);
-  }, [submission]);
+  }, [onSubmit]);
 
   let currentField = state[quesNo];
 
@@ -353,8 +354,9 @@ export default function Preview(props: { formID: number }) {
                 setSubmission((sub) => {
                   return { ...sub, answers: FormAnswers };
                 });
-
+                setOnSubmit(onSubmit ? false : true);
                 alert(alertText + 'Thanks for responding!');
+                // submitAnswers(submission, props.formID);
               }}
               className="float-right w-28 shadow-md bg-blue-500 font-medium font-worksans rounded-lg px-2 py-2 my-2 text-white hover:bg-blue-700 smooth-effect"
             >
