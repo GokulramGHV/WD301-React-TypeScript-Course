@@ -21,17 +21,6 @@ const fetchForms = async (setFormStateCB: (value: Form[]) => void) => {
   }
 };
 
-// const removeForm = async (setFormStateCB: any, formId: number) => {
-//   try {
-//     setFormStateCB((formsState: Form[]) =>
-//       formsState.filter((form: Form) => form.id !== formId)
-//     );
-//     const data = await deleteForm(formId);
-//   } catch (error) {
-//     console.log(error);
-//   }
-// };
-
 export function Home() {
   const [{ search }, setQuery] = useQueryParams();
   const [searchString, setSearchString] = useState('');
@@ -46,16 +35,6 @@ export function Home() {
     fetchForms(setFormsState);
   }, []);
 
-  // const addNewForm = () => {
-  //   const newForm: formData = {
-  //     id: Number(new Date()),
-  //     title: 'Untitled Form',
-  //     formFields: initialFormFields,
-  //   };
-
-  //   saveLocalForms([...formsState, newForm]);
-  //   setFormsState(getLocalForms());
-  // };
 
   return (
     <>
@@ -91,10 +70,9 @@ export function Home() {
               formName={form.title}
               key={form.id}
               id={form.id as number}
-              // openFormsCB={() => (window.location.href = `forms/${form.id}`)}
-              removeFormsCB={(id) => {
-                // removeForm(setFormsState, form.id as number);
-              }}
+              // removeFormsCB={(id) => {
+              //   // removeForm(setFormsState, form.id as number);
+              // }}
             />
           ))}
       </div>

@@ -100,6 +100,14 @@ export const submitForm = (formId: number, data: Submission) => {
   return request(`forms/${formId}/submission/`, 'POST', data);
 };
 
+export const getFormResponses = (formId: number) => {
+  return request(`forms/${formId}/submission/`, 'GET');
+};
+
+export const getFormResponse = (formId: number, responseId: number) => {
+  return request(`forms/${formId}/submission/${responseId}/`, 'GET');
+};
+
 export const addNewFormField = (formId: number, field: FormField_api) => {
   return request(`forms/${formId}/fields/`, 'POST', field);
 };

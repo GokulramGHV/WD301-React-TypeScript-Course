@@ -35,6 +35,8 @@ export type Answer = {
 }
 
 export type Submission = {
+  id?: number;
   answers: Answer[];
   form: Form;
+  created_date?: string;
 }

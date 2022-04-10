@@ -160,7 +160,7 @@ const fetchFormFields = async (
   formID: number
 ) => {
   try {
-    const data: any = await listFormFields(formID); // maybe here
+    const data = await listFormFields(formID); // maybe here
     dispatchCB({ type: 'set_fields', fields: data.results });
   } catch (error) {
     console.log(error);
@@ -199,7 +199,7 @@ const fetchFormFields = async (
 // };
 
 const onChangeFormTitle = async (
-  setFormTitleCB: any,
+  setFormTitleCB: React.Dispatch<React.SetStateAction<string>>,
   formID: number,
   title: string
 ) => {
@@ -338,7 +338,7 @@ const getFormTitle = async (
   formID: number
 ) => {
   try {
-    const data: any = await getFormDetails(formID); // maybe here
+    const data = await getFormDetails(formID); // maybe here
     setFormTitleCB(data.title);
   } catch (error) {
     console.log(error);
@@ -351,10 +351,6 @@ export function Form(props: { formID: number }) {
   const [newFieldType, setnewFieldType] = useState<FormFieldTypes_api>('TEXT');
   const [state, dispatch] = useReducer(reducer, []);
   const titleRef = useRef<HTMLInputElement>(null);
-
-  // useEffect(() => {
-  //   state.id !== props.formID && navigate(`/forms/${state.id}`);
-  // }, [state.id, props.formID]);
 
   useEffect(() => {
     fetchFormFields(dispatch, props.formID);
@@ -381,7 +377,6 @@ export function Form(props: { formID: number }) {
   //   };
   // }, [state]);
 
-  // const data_of_form: any = await
   return (
     <>
       <div className="grid grid-cols-1 divide-y-2">

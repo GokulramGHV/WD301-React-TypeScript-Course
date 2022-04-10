@@ -71,8 +71,8 @@ const fetchFormFields = async (
 ) => {
   try {
     const data: any = await listFormFields(formID);
-    // if (data.is_public)
-    dispatchCB({ type: 'set_fields', fields: data.results });
+    if (data.is_public)
+      dispatchCB({ type: 'set_fields', fields: data.results });
   } catch (error) {
     console.log(error);
   }
