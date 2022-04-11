@@ -9,6 +9,17 @@ import CreateForm from './CreateForm';
 import { deleteForm, listForms } from '../utils/apiUtils';
 import { Pagination } from '../types/common';
 
+const removeForm = async (
+  setFormStateCB: React.Dispatch<React.SetStateAction<Form[]>>,
+  formID: number
+) => {
+  try {
+    setFormStateCB((state) => state.filter((f) => f.id !== formID));
+    const data = await deleteForm(formID);
+  } catch (error) {
+    console.log(error);
+  }
+};
 const fetchForms = async (setFormStateCB: (value: Form[]) => void) => {
   // fetch('https://tsapi.coronasafe.live/api/mock_test/').then((response) =>
   //   response.json().then((data) => setFormStateCB(data))
@@ -34,7 +45,6 @@ export function Home() {
   useEffect(() => {
     fetchForms(setFormsState);
   }, []);
-
 
   return (
     <>
@@ -70,9 +80,9 @@ export function Home() {
               formName={form.title}
               key={form.id}
               id={form.id as number}
-              // removeFormsCB={(id) => {
-              //   // removeForm(setFormsState, form.id as number);
-              // }}
+              removeFormsCB={(id) => {
+                removeForm(setFormsState, form.id as number);
+              }}
             />
           ))}
       </div>

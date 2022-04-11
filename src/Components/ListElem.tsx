@@ -5,7 +5,7 @@ export default function ListElem(props: {
   id: number;
   formName: string;
   // openFormsCB: (id: number) => void;
-  // removeFormsCB: (id: number) => void;
+  removeFormsCB: (id: number) => void;
 }) {
   return (
     <div className="py-2 border-2 border-gray-200 pr-4 rounded-lg bg-white shadow-md mb-3">
@@ -37,12 +37,12 @@ export default function ListElem(props: {
         >
           <i className="fab fa-wpforms"></i>
         </Link>
-        {/* <button
-                    onClick={() => props.removeFormsCB(props.id)}
-                    className="ml-3 w-10 bg-red-500 font-medium font-worksans rounded-lg px-2 py-2 my-2 text-white hover:bg-red-700 smooth-effect"
-                >
-                    <i className="fa-solid fa-trash"></i>
-                </button> */}
+        <button
+          onClick={() => props.removeFormsCB(props.id)}
+          className="ml-3 w-10 bg-red-500 font-medium font-worksans rounded-lg px-2 py-2 my-2 text-white hover:bg-red-700 smooth-effect"
+        >
+          <i className="fa-solid fa-trash"></i>
+        </button>
       </div>
     </div>
   );
