@@ -93,6 +93,7 @@ export function Home() {
             setSearchString(e.target.value);
           }}
           name="search"
+          aria-label="Search"
           placeholder=" 🔎 Search "
           className="flex-1 border-2 w-full border-gray-300 rounded-lg p-2 mt-1 mb-5 smooth-effect hover:border-blue-400 hover:ring-blue-400 focus:ring-blue-400 focus:border-blue-400"
         />
@@ -115,20 +116,24 @@ export function Home() {
             </div>
           }
         >
-          {formsState
-            .filter((form) =>
-              form.title.toLowerCase().includes(search?.toLowerCase())
-            )
-            .map((form) => (
-              <ListELem
-                formName={form.title}
-                key={form.id}
-                id={form.id as number}
-                removeFormsCB={(id) => {
-                  removeForm(setFormsState, form.id as number);
-                }}
-              />
-            ))}
+          <ul>
+            {formsState
+              .filter((form) =>
+                form.title.toLowerCase().includes(search?.toLowerCase())
+              )
+              .map((form) => (
+                <li>
+                  <ListELem
+                    formName={form.title}
+                    key={form.id}
+                    id={form.id as number}
+                    removeFormsCB={(id) => {
+                      removeForm(setFormsState, form.id as number);
+                    }}
+                  />
+                </li>
+              ))}
+          </ul>
         </InfiniteScroll>
       </div>
 

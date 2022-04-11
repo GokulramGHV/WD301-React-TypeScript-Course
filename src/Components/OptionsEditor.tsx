@@ -65,7 +65,11 @@ export function OptionsEditor(props: {
       {/* <p>Question:</p>
       <p>{props.fieldLabel}</p> */}
 
-      <div className="p-4 bg-gray-100 drop-shadow-md rounded-lg mt-1 mb-2">
+      <div
+        className="p-4 bg-gray-100 drop-shadow-md rounded-lg mt-1 mb-2"
+        tabIndex={0}
+        aria-label="Options Editor"
+      >
         <h1 className="text-lg font-medium mb-3">
           {props.fieldKind.toLocaleLowerCase()} Editor
         </h1>
@@ -126,7 +130,7 @@ export function InputOptionsEditor(props: {
   changeOptionsCB: (options: string[], fieldId: number) => void;
 }) {
   return (
-    <div key={props.field.id}>
+    <div key={props.field.id} tabIndex={0} aria-label={`${props.field.kind.toLocaleLowerCase()} Field`}>
       <div className="flex">
         <input
           type="text"
@@ -139,6 +143,7 @@ export function InputOptionsEditor(props: {
           className="flex-1 border-2 border-gray-300 rounded-lg p-2 mt-1 mb-2 smooth-effect hover:border-blue-400 hover:ring-blue-400 focus:ring-blue-400 focus:border-blue-400"
         />
         <button
+          aria-label="Edit Options"
           className="ml-3 w-28 bg-blue-500 font-medium font-worksans rounded-lg px-2 py-2 my-2 text-white hover:bg-blue-700 smooth-effect"
           type="button"
           data-bs-toggle="collapse" // {`collapse`}
@@ -152,6 +157,7 @@ export function InputOptionsEditor(props: {
         <button
           className="ml-3 w-28 bg-blue-500 font-medium font-worksans rounded-lg px-2 py-2 my-2 text-white hover:bg-blue-700 smooth-effect"
           onClick={(_) => props.removeFieldCB(props.field.id as number)}
+          aria-label="Remove"
         >
           Remove
         </button>
