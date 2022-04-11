@@ -7,12 +7,10 @@ export type Pagination<T> = {
   results: T[];
 };
 
-// export type FieldsPagination_api<T> = {
-//   count: number;
-//   next: string;
-//   previous: string;
-//   results: T[];
-// };
+export type PaginationParams = {
+  offset: number;
+  limit: number;
+}
 
 
 export type FormFieldTypes_api = "TEXT" | "DROPDOWN" | "RADIO" | "GENERIC";

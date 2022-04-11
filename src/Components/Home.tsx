@@ -6,8 +6,9 @@ import Header from '../Header';
 import { Form, formData } from '../types/formTypes';
 import Modal from './common/Modal';
 import CreateForm from './CreateForm';
-import { deleteForm, listForms } from '../utils/apiUtils';
-import { Pagination } from '../types/common';
+import { deleteForm, listForms, listFormsWithParams } from '../utils/apiUtils';
+import { Pagination, PaginationParams } from '../types/common';
+import InfiniteScroll from 'react-infinite-scroller';
 
 const removeForm = async (
   setFormStateCB: React.Dispatch<React.SetStateAction<Form[]>>,
@@ -20,13 +21,26 @@ const removeForm = async (
     console.log(error);
   }
 };
-const fetchForms = async (setFormStateCB: (value: Form[]) => void) => {
+const fetchForms = async (
+  sethasMoreCB: React.Dispatch<React.SetStateAction<boolean>>,
+  setpageCB: React.Dispatch<React.SetStateAction<PaginationParams>>,
+  setFormStateCB: (value: Form[]) => void
+) => {
   // fetch('https://tsapi.coronasafe.live/api/mock_test/').then((response) =>
   //   response.json().then((data) => setFormStateCB(data))
   // );
   try {
-    const data: Pagination<Form> = await listForms();
+    const data: Pagination<Form> = await listFormsWithParams({
+      limit: 5,
+      offset: 0,
+    });
     setFormStateCB(data.results);
+    setpageCB((state) => {
+      return { ...state, offset: state.offset + 5 };
+    });
+    if (data.results.length === 0 || data.results.length < 5) {
+      sethasMoreCB(false);
+    }
   } catch (error) {
     console.log(error);
   }
@@ -37,14 +51,28 @@ export function Home() {
   const [searchString, setSearchString] = useState('');
   const [formsState, setFormsState] = useState<Form[]>([]);
   const [newForm, setNewForm] = useState(false);
+  const [hasMore, sethasMore] = useState(true);
+  const [page, setpage] = useState<PaginationParams>({ limit: 5, offset: 0 });
 
   useEffect(() => {
     navigate(`/?search=${searchString}`);
   }, [searchString]);
 
   useEffect(() => {
-    fetchForms(setFormsState);
+    fetchForms(sethasMore, setpage, setFormsState);
   }, []);
+
+  const fetchData = async () => {
+    const data = await listFormsWithParams(page);
+    console.log(data);
+    setFormsState([...formsState, ...data.results]);
+    if (data.results.length === 0 || data.results.length < 5) {
+      sethasMore(false);
+    }
+    setpage((state) => {
+      return { ...state, offset: state.offset + 5 };
+    });
+  };
 
   return (
     <>
@@ -71,20 +99,37 @@ export function Home() {
       </form>
 
       <div>
-        {formsState
-          .filter((form) =>
-            form.title.toLowerCase().includes(search?.toLowerCase())
-          )
-          .map((form) => (
-            <ListELem
-              formName={form.title}
-              key={form.id}
-              id={form.id as number}
-              removeFormsCB={(id) => {
-                removeForm(setFormsState, form.id as number);
-              }}
-            />
-          ))}
+        <InfiniteScroll
+          // pageStart={0}
+          initialLoad={false}
+          loadMore={fetchData}
+          hasMore={hasMore}
+          loader={
+            <div
+              className={
+                !hasMore ? 'hidden ' : 'loader text-center my-3 text-gray-400'
+              }
+              key={0}
+            >
+              Scroll down to view more...
+            </div>
+          }
+        >
+          {formsState
+            .filter((form) =>
+              form.title.toLowerCase().includes(search?.toLowerCase())
+            )
+            .map((form) => (
+              <ListELem
+                formName={form.title}
+                key={form.id}
+                id={form.id as number}
+                removeFormsCB={(id) => {
+                  removeForm(setFormsState, form.id as number);
+                }}
+              />
+            ))}
+        </InfiniteScroll>
       </div>
 
       {formsState.length === 0 ? (

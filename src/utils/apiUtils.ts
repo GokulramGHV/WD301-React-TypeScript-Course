@@ -1,4 +1,4 @@
-import { FormField_api, Submission } from '../types/common';
+import { FormField_api, PaginationParams, Submission } from '../types/common';
 import { Form } from '../types/formTypes';
 
 const API_BASE_URL = 'https://tsapi.coronasafe.live/api/';
@@ -78,6 +78,10 @@ export const register = (
 
 export const listForms = () => {
   return request('forms/', 'GET');
+};
+
+export const listFormsWithParams = (pageParams: PaginationParams) => {
+  return request('forms/', 'GET', pageParams);
 };
 
 export const listFormFields = (formId: number) => {
