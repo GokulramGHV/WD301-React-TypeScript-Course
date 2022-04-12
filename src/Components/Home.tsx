@@ -45,7 +45,7 @@ const fetchForms = async (
   }
 };
 
-export function Home() {
+export default function Home() {
   const [{ search }, setQuery] = useQueryParams();
   const [searchString, setSearchString] = useState('');
   const [formsState, setFormsState] = useState<Form[]>([]);

@@ -302,7 +302,7 @@ const getFormTitle = async (
   }
 };
 
-export function FormEditor(props: { formID: number }) {
+export default function FormEditor(props: { formID: number }) {
   const [formTitle, setFormTitle] = useState('');
   const [newField, setNewField] = useReducer(newFieldReducer, '');
   const [newFieldType, setnewFieldType] = useState<FormFieldTypes_api>('TEXT');
