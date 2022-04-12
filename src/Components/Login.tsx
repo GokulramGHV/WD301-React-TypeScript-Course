@@ -1,6 +1,5 @@
 import { navigate } from 'raviger';
 import React, { useEffect, useState } from 'react';
-import { Errors } from '../types/formTypes';
 // import Header from '../Header';
 import { login } from '../utils/apiUtils';
 
@@ -15,8 +14,8 @@ export default function Login() {
     try {
       const data = await login(username, password);
       localStorage.setItem('token', data.token);
-      window.location.reload();
       navigate('/');
+      window.location.reload();
     } catch (error: any) {
       // setErrors(error.non_field_errors);
       console.log(error);

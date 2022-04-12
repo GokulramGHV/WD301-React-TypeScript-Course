@@ -1,14 +1,7 @@
 import { Link } from 'raviger';
 import React, { useEffect, useReducer, useState } from 'react';
-// import { getLocalForms, initialFormFields } from './Form';
 import PreviewInput from './PreviewInput';
-import {
-  formResponse,
-  fieldResponse,
-  formData,
-  formField,
-  Form,
-} from '../types/formTypes';
+import { Form } from '../types/formTypes';
 import PreviewDropdown from './PreviewDropdown';
 import { Answer, FormField_api, Submission } from '../types/common';
 import { getFormDetails, listFormFields, submitForm } from '../utils/apiUtils';
@@ -135,17 +128,17 @@ export default function Preview(props: { formID: number }) {
   useEffect(() => {
     fetchFormFields(dispatch, props.formID);
     initialSubmission(setSubmission, props.formID);
-  }, []);
+  }, [props.formID]);
 
   useEffect(() => {
     submitAnswers(submission, props.formID);
-  }, [submission]);
+  }, [submission, props.formID]);
 
   let currentField = state[quesNo];
 
-  useEffect(() => {
-    currentField = state[quesNo];
-  }, [quesNo]);
+  // useEffect(() => {
+  //   currentField = state[quesNo];
+  // }, [quesNo]);
 
   if (state.length > 0) {
     return (

@@ -1,12 +1,10 @@
 import React, { useEffect, useState } from 'react';
 import ListELem from './ListElem';
-// import { initialFormFields, getLocalForms, saveLocalForms } from './Form';
 import { navigate, useQueryParams } from 'raviger';
-import Header from '../Header';
-import { Form, formData } from '../types/formTypes';
+import { Form } from '../types/formTypes';
 import Modal from './common/Modal';
 import CreateForm from './CreateForm';
-import { deleteForm, listForms, listFormsWithParams } from '../utils/apiUtils';
+import { deleteForm, listFormsWithParams } from '../utils/apiUtils';
 import { Pagination, PaginationParams } from '../types/common';
 import InfiniteScroll from 'react-infinite-scroller';
 
@@ -122,7 +120,7 @@ export function Home() {
                 form.title.toLowerCase().includes(search?.toLowerCase())
               )
               .map((form) => (
-                <li>
+                <li key={form.id}>
                   <ListELem
                     formName={form.title}
                     key={form.id}

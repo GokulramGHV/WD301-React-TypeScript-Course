@@ -1,11 +1,10 @@
 // import { totalmem } from 'os';
-import { Link, navigate } from 'raviger';
+import { Link } from 'raviger';
 import React, { useState, useEffect, useRef, useReducer } from 'react';
 
 import { FormFieldTypes_api, FormField_api } from '../types/common';
 import UserInput from './UserInput';
 import { InputOptionsEditor } from './OptionsEditor';
-// import TextAreaInput from './TextAreaInput';
 import {
   addNewFormField,
   getFormDetails,
@@ -27,10 +26,10 @@ type RemoveAction = {
   id: number;
 };
 
-type UpdateTitleAction = {
-  type: 'update_title';
-  title: string;
-};
+// type UpdateTitleAction = {
+//   type: 'update_title';
+//   title: string;
+// };
 
 // type ChangeOptionAction = {
 //   type: 'change_option';
@@ -38,9 +37,9 @@ type UpdateTitleAction = {
 //   fieldID: number;
 // };
 
-type ResetFieldsAction = {
-  type: 'reset_fields';
-};
+// type ResetFieldsAction = {
+//   type: 'reset_fields';
+// };
 
 type OnChangeFieldAction = {
   type: 'on_change_field';
@@ -162,51 +161,6 @@ const fetchFormFields = async (
   try {
     const data = await listFormFields(formID); // maybe here
     dispatchCB({ type: 'set_fields', fields: data.results });
-  } catch (error) {
-    console.log(error);
-  }
-};
-
-// const addFormField = async (
-//   formID: number,
-//   fieldName: string,
-//   fieldType: FormFieldTypes_api = 'TEXT'
-// ) => {
-//   try {
-//     const data = await addNewFormField(formID, {
-//       kind: fieldType,
-//       label: fieldName,
-//       value: '',
-//     });
-//   } catch (error) {
-//     console.log(error);
-//   }
-// };
-
-// const removeField = async (
-//   setNewStateCB: any,
-//   formID: number,
-//   fieldID: number
-// ) => {
-//   try {
-//     setNewStateCB((state: FormField_api[]) =>
-//       state.filter((f) => f.id !== fieldID)
-//     );
-//     const data = await removeFormField(formID, fieldID);
-//   } catch (error) {
-//     console.log(error);
-//   }
-// };
-
-const onChangeFormTitle = async (
-  setFormTitleCB: React.Dispatch<React.SetStateAction<string>>,
-  formID: number,
-  title: string
-) => {
-  try {
-    setFormTitleCB(title);
-    const formDetail = await getFormDetails(formID);
-    const data = await updateForm(formID, { ...formDetail, title: title });
   } catch (error) {
     console.log(error);
   }
@@ -345,7 +299,7 @@ const getFormTitle = async (
   }
 };
 
-export function Form(props: { formID: number }) {
+export function FormEditor(props: { formID: number }) {
   const [formTitle, setFormTitle] = useState('');
   const [newField, setNewField] = useReducer(newFieldReducer, '');
   const [newFieldType, setnewFieldType] = useState<FormFieldTypes_api>('TEXT');
@@ -355,18 +309,18 @@ export function Form(props: { formID: number }) {
   useEffect(() => {
     fetchFormFields(dispatch, props.formID);
     getFormTitle(setFormTitle, props.formID);
-  }, []);
+  }, [props.formID]);
 
   useEffect(() => {
     document.title = 'Form Editor';
     return () => {
       document.title = 'React App';
     };
-  }, []);
+  }, [props.formID]);
 
   useEffect(() => {
     titleRef.current?.focus();
-  }, []);
+  }, [props.formID]);
 
   // useEffect(() => {
   //   let timeout = setTimeout(() => {

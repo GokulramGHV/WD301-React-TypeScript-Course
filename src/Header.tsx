@@ -1,4 +1,4 @@
-import { ActiveLink, Link } from 'raviger';
+import { ActiveLink } from 'raviger';
 import React from 'react';
 import logo from './logo.svg';
 import { User } from './types/userTypes';

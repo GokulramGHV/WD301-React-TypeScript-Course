@@ -1,10 +1,5 @@
-import React, { useState, useEffect, useRef } from 'react';
+import React, { useState, useEffect } from 'react';
 import { FormField_api } from '../types/common';
-import {
-  dropDownField,
-  multipleSelectField,
-  radioInputField,
-} from '../types/formTypes';
 
 export function OptionsEditor(props: {
   fieldID: number;
@@ -130,7 +125,11 @@ export function InputOptionsEditor(props: {
   changeOptionsCB: (options: string[], fieldId: number) => void;
 }) {
   return (
-    <div key={props.field.id} tabIndex={0} aria-label={`${props.field.kind.toLocaleLowerCase()} Field`}>
+    <div
+      key={props.field.id}
+      tabIndex={0}
+      aria-label={`${props.field.kind.toLocaleLowerCase()} Field`}
+    >
       <div className="flex">
         <input
           type="text"

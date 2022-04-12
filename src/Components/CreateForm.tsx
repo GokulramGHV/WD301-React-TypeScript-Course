@@ -1,6 +1,5 @@
 import { navigate } from 'raviger';
 import React, { useState } from 'react';
-import { json } from 'stream/consumers';
 import { Errors, Form, validateForm } from '../types/formTypes';
 import { createForm } from '../utils/apiUtils';
 
@@ -13,10 +12,10 @@ export default function CreateForm() {
 
   const [errors, setErrors] = useState<Errors<Form>>({});
 
-  const handleChange = (event: React.ChangeEvent<HTMLInputElement>) => {
-    const { name, value } = event.target;
-    setForm({ ...form, [name]: value });
-  };
+  // const handleChange = (event: React.ChangeEvent<HTMLInputElement>) => {
+  //   const { name, value } = event.target;
+  //   setForm({ ...form, [name]: value });
+  // };
 
   const handleSubmit = async (event: React.FormEvent<HTMLFormElement>) => {
     event.preventDefault();

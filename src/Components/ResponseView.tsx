@@ -1,4 +1,3 @@
-import { Link } from 'raviger';
 import React, { useEffect, useState } from 'react';
 import { FormField_api, Submission } from '../types/common';
 import { getFormResponse, listFormFields } from '../utils/apiUtils';
@@ -52,7 +51,7 @@ export default function ResponseView(props: {
   useEffect(() => {
     getResponse(setResponse, props.formID, props.responseID);
     fetchFormFields(setFields, props.formID);
-  }, []);
+  }, [props.formID, props.responseID]);
 
   return (
     <>

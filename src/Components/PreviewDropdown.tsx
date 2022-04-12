@@ -1,6 +1,5 @@
 import React from 'react';
 import { FormField_api } from '../types/common';
-import { dropDownField, formField } from '../types/formTypes';
 export default function PreviewDropdown(props: {
   field: FormField_api;
   onChangeFieldCB: (val: string, id: number) => void;
