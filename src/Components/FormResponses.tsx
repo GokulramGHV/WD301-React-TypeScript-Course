@@ -19,7 +19,7 @@ export default function FormResponses(props: { formID: number }) {
   const [responses, setResponses] = useState<Submission[]>([]);
   useEffect(() => {
     fetchResponses(setResponses, props.formID);
-  }, []);
+  }, [props.formID]);
   return (
     <>
       <h1 className="text-2xl font-semibold text-center">

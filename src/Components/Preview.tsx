@@ -109,6 +109,7 @@ const submitAnswers = async (submission: Submission, formID: number) => {
   });
   try {
     if (submit) {
+      // eslint-disable-next-line
       const data = await submitForm(formID, submission);
     }
   } catch (error) {

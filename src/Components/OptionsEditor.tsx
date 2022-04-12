@@ -40,7 +40,7 @@ export function OptionsEditor(props: {
     return () => {
       clearTimeout(timeout);
     };
-  }, [optionsState]);
+  }, [optionsState, props]);
 
   const removeField = (id: number) => {
     setOptionsState((state) => state.filter((field) => field.opId !== id));

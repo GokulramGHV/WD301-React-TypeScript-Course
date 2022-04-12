@@ -1,7 +1,5 @@
-// import { totalmem } from 'os';
 import { Link } from 'raviger';
 import React, { useState, useEffect, useRef, useReducer } from 'react';
-
 import { FormFieldTypes_api, FormField_api } from '../types/common';
 import UserInput from './UserInput';
 import { InputOptionsEditor } from './OptionsEditor';
@@ -202,6 +200,7 @@ const SaveFormData = async (
   const formDetail = await getFormDetails(formID);
   if (formDetail.title !== formTitle) {
     try {
+      // eslint-disable-next-line
       const data = await updateForm(formID, {
         ...formDetail,
         title: formTitle,
@@ -221,6 +220,7 @@ const SaveFormData = async (
     if (!stateIdArray.includes(initForm[j].id)) {
       // Remove Field Request
       try {
+        // eslint-disable-next-line
         const data = await removeFormField(formID, initForm[j].id);
         console.log('Removed Field %d', initForm[j].id);
       } catch (error) {
@@ -234,6 +234,7 @@ const SaveFormData = async (
     if (!idArray.includes(state[i].id as number)) {
       // Add Field Request
       try {
+        // eslint-disable-next-line
         const data = await addNewFormField(formID, {
           kind: state[i].kind,
           label: state[i].label,
@@ -253,6 +254,7 @@ const SaveFormData = async (
       if (fieldToCheck[0].label !== state[i].label) {
         // Change Field Label Request
         try {
+          // eslint-disable-next-line
           const data = await updateFormField(formID, state[i].id as number, {
             ...state[i],
             label: state[i].label,
@@ -271,6 +273,7 @@ const SaveFormData = async (
       ) {
         // Change Field Options Request
         try {
+          // eslint-disable-next-line
           const data = await updateFormField(formID, state[i].id as number, {
             ...state[i],
             options: state[i].options,
@@ -427,6 +430,8 @@ export function FormEditor(props: { formID: number }) {
                   }
                 />
               );
+            } else {
+              return <div></div>;
             }
 
             // case 'textArea':

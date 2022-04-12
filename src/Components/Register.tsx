@@ -11,6 +11,7 @@ export default function Register() {
   const handleSubmit = async (event: React.FormEvent<HTMLFormElement>) => {
     event.preventDefault();
     try {
+      // eslint-disable-next-line
       const data = await register(username, email, password1, password2);
       // localStorage.setItem('token', data.token);
       // window.location.reload();

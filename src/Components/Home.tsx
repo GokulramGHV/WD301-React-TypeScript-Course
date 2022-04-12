@@ -14,6 +14,7 @@ const removeForm = async (
 ) => {
   try {
     setFormStateCB((state) => state.filter((f) => f.id !== formID));
+    // eslint-disable-next-line
     const data = await deleteForm(formID);
   } catch (error) {
     console.log(error);
